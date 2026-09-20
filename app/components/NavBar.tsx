@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Menu, X } from "lucide-react"
 import { usePathname } from "next/navigation"
+import Link from "next/link"
 
 export default function Navbar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -15,8 +16,8 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="flex bg-[#ccc5b9] justify-between pl-4 pr-4 pt-2 pb-2">
-        <h1 className="text-[#252422] text-3xl tracking-tight">ypf</h1>
+      <nav className="flex shadow-xs bg-[#ccc5b9] justify-between pl-4 pr-4 pt-2 pb-2">
+        <div className="size-12 bg-[#eb5e28]"></div>
         <button
           onClick={handleMenu}
           className="hover:cursor-pointer text-[#252422]"
@@ -30,25 +31,28 @@ export default function Navbar() {
         className={`fixed inset-0 z-20 transition-colors ${
           isSidebarOpen ? "bg-black/40" : "pointer-events-none opacity-0"
         }`}
+        onClick={handleMenu}
       />
 
       <aside
-        className={`fixed right-0 top-0 z-30 h-full border-t-0 bg-[#403d39] p-6 text-white transition-transform duration-300 ${
+        className={`fixed flex right-0 top-0 z-30 h-full border-t-0 bg-[#403d39] text-white transition-transform duration-300 ${
           isSidebarOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="mb-8 flex justify-end">
-          <button
-            onClick={handleMenu}
-            aria-label="Close menu"
-            className="hover:cursor-pointer"
-          >
-            <X size={28} />
-          </button>
-        </div>
+        
+        
 
-        <nav className="flex flex-col items-start gap-4 pr-24">
-          <a
+        <nav className="flex flex-col items-start text-3xl pl-6 pt-6 gap-4 pr-24">
+          <div className="mb-6 flex justify-end">
+            <button
+              onClick={handleMenu}
+              aria-label="Close menu"
+              className="hover:cursor-pointer"
+            >
+              <X size={28} />
+            </button>
+          </div>
+          <Link
             href="/"
             aria-current={pathname === "/" ? "page" : undefined}
             className={`relative inline-block after:absolute after:bottom-0 after:left-0
@@ -61,8 +65,8 @@ export default function Navbar() {
                 }`}
           >
             Dashboard
-          </a>
-          <a
+          </Link>
+          <Link
             href="/transactions"
             aria-current={pathname === "/transactions" ? "page" : undefined}
             className={`relative inline-block after:absolute after:bottom-0 after:left-0
@@ -75,8 +79,8 @@ export default function Navbar() {
                 }`}
           >
             Transactions
-          </a>
-          <a
+          </Link>
+          <Link
             href="/categories"
             aria-current={pathname === "/categories" ? "page" : undefined}
             className={`relative inline-block after:absolute after:bottom-0 after:left-0
@@ -89,8 +93,9 @@ export default function Navbar() {
                 }`}
           >
             Categories
-          </a>
+          </Link>
         </nav>
+        <div className="h-screen w-12 bg-[#eb5e28]"></div>
       </aside>
     </>
   )

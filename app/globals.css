@@ -24,4 +24,10 @@ body {
   background-color: #fffcf2;
   color: var(--foreground);
   font-family: var(--font-inter), sans-serif;
+  --tw-tracking: var(--tracking-tight) /* -0.025em */;
+  letter-spacing: var(--tracking-tight) /* -0.025em */;
+  @property --tw-tracking {
+    syntax: "*";
+    inherits: false;
+  }
 }
