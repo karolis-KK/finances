@@ -1,7 +1,9 @@
+import Navbar from "./components/NavBar";
+
 export default function Home() {
   return (
-    <section>
-      dwa
+    <section className="h-screen">
+      <Navbar />
     </section>
   );
 }
