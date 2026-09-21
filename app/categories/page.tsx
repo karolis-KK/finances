@@ -33,8 +33,8 @@ export default function CategoriesPage() {
           }
         />
         {categories.length === 0 ? (
-          <div className="flex flex-col justify-center items-center">
-            <h1 className="text-[#eb5e28] text-5xl font-medium">
+          <div className="flex flex-col items-center justify-center">
+            <h1 className="text-[#eb5e28] text-center lg:text-5xl text-3xl font-medium">
               You haven&apos;t added any categories
             </h1>
             <button

@@ -52,7 +52,7 @@ export default function CategoryMenu({ categoryMenu, onToggle, onAddCategory }: 
     >
     <div className="flex flex-row-reverse">
       <div className="w-12 h-screen bg-[#eb5e28]"></div>
-      <div className="pr-24 pt-6">
+      <div className="pr-12 pt-6">
         <button onClick={onToggle} className="hover:cursor-pointer">
         <X size={28} />
       </button>
