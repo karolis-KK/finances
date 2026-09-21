@@ -46,7 +46,10 @@ export default function CategoriesPage() {
           </div>
         ) : (
           <div className="flex flex-row p-6">
-            <CategoryCard categories={categories} />
+            <CategoryCard
+              categories={categories}
+              onUpdateCategories={setCategories}
+            />
           </div>
         )}
       </div>
