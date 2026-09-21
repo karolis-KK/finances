@@ -5,6 +5,7 @@ import CategoryCard from "../components/CategoryCard"
 import { useState } from "react"
 import type { Category } from "@/types/finance"
 import CategoryMenu from "../components/CategoryMenu"
+import Footer from "../components/Footer"
 
 export default function CategoriesPage() {
   const emptyCategories: Category[] = []
@@ -19,7 +20,6 @@ export default function CategoriesPage() {
   return (
     <section className="flex min-h-screen flex-col">
       <Navbar />
-
       <div
         className={`flex-1 ${
           categories.length === 0 ? "flex items-center justify-center" : ""
@@ -28,11 +28,14 @@ export default function CategoriesPage() {
         <CategoryMenu
           categoryMenu={categoryMenu}
           onToggle={handleCategoryMenu}
+          onAddCategory={(category) =>
+            setCategories((currentCategories) => [...currentCategories, category])
+          }
         />
         {categories.length === 0 ? (
           <div className="flex flex-col justify-center items-center">
             <h1 className="text-[#eb5e28] text-5xl font-medium">
-              You haven't added any categories
+              You haven&apos;t added any categories
             </h1>
             <button
               onClick={handleCategoryMenu}
@@ -42,11 +45,16 @@ export default function CategoriesPage() {
             </button>
           </div>
         ) : (
-          <div>
+          <div className="flex flex-row p-6">
             <CategoryCard categories={categories} />
           </div>
         )}
       </div>
+    <Footer
+      categories={categories}
+      onToggle={handleCategoryMenu}
+      onAddCategory={(category) => setCategories((currentCategories) => [...currentCategories, category])}
+    />
     </section>
   )
 }

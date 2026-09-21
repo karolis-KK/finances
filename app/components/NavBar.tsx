@@ -17,7 +17,14 @@ export default function Navbar() {
   return (
     <>
       <nav className="flex shadow-xs bg-[#ccc5b9] justify-between pl-4 pr-4 pt-2 pb-2">
-        <div className="size-12 bg-[#eb5e28]"></div>
+        <div className="size-12 bg-[#eb5e28] flex items-center justify-center text-4xl gap-x-3">
+          <div>
+          [
+          </div>
+          <div>
+          ]
+          </div>
+        </div>
         <button
           onClick={handleMenu}
           className="hover:cursor-pointer text-[#252422]"
@@ -39,9 +46,6 @@ export default function Navbar() {
           isSidebarOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        
-        
-
         <nav className="flex flex-col items-start text-3xl pl-6 pt-6 gap-4 pr-24">
           <div className="mb-6 flex justify-end">
             <button

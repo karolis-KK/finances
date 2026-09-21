@@ -1,9 +1,15 @@
 export type TransactionType = 'income' | 'expense';
 
+export const DEFAULT_CATEGORY_COLOR = '#eb5e28';
+export const DEFAULT_CATEGORY_EMOJI ='📁'
+
 export type Category = {
     id: string,
     name: string,
+    amount: number,
+    used: number,
     color?: string; // hex code for charts and etc (e.g., #00008B)
+    emoji?: string;
 }
 
 export type Transaction = {
