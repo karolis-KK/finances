@@ -2,16 +2,31 @@
 
 import Navbar from "../components/NavBar"
 import CategoryCard from "../components/CategoryCard"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import type { Category } from "@/types/finance"
 import CategoryMenu from "../components/CategoryMenu"
 import Footer from "../components/Footer"
 
 export default function CategoriesPage() {
-  const emptyCategories: Category[] = []
-
-  const [categories, setCategories] = useState(emptyCategories)
+  const [categories, setCategories] = useState<Category[]>([])
   const [categoryMenu, setCategoryMenu] = useState(false)
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      const response = await fetch("/sample_categories.json")
+
+      if (!response.ok) {
+        throw new Error(`Failed to load categories: ${response.status}`)
+      }
+
+      const sampleCategories: Category[] = await response.json()
+      setCategories(sampleCategories)
+    }
+
+    loadCategories().catch((error: unknown) => {
+      console.error("Could not load sample categories.", error)
+    })
+  }, [])
 
   const handleCategoryMenu = () => {
     setCategoryMenu((isOpen) => !isOpen)
@@ -20,11 +35,7 @@ export default function CategoriesPage() {
   return (
     <section className="flex min-h-screen flex-col">
       <Navbar />
-      <div
-        className={`flex-1 ${
-          categories.length === 0 ? "flex items-center justify-center" : ""
-        }`}
-      >
+      <div className="flex flex-1 flex-col">
         <CategoryMenu
           categoryMenu={categoryMenu}
           onToggle={handleCategoryMenu}
@@ -33,7 +44,7 @@ export default function CategoriesPage() {
           }
         />
         {categories.length === 0 ? (
-          <div className="flex flex-col items-center justify-center">
+          <div className="flex flex-1 flex-col items-center justify-center">
             <h1 className="text-[#eb5e28] text-center lg:text-5xl text-3xl font-medium">
               You haven&apos;t added any categories
             </h1>
@@ -45,7 +56,7 @@ export default function CategoriesPage() {
             </button>
           </div>
         ) : (
-          <div className="flex flex-row p-6">
+          <div className="flex flex-1 items-center justify-center">
             <CategoryCard
               categories={categories}
               onUpdateCategories={setCategories}

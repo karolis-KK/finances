@@ -1,0 +1,130 @@
+[
+  {
+    "id": "cat-001",
+    "name": "Food",
+    "amount": 600,
+    "used": 425.5,
+    "color": "#2E8B57",
+    "emoji": "🛒"
+  },
+  {
+    "id": "cat-002",
+    "name": "Transport",
+    "amount": 300,
+    "used": 180,
+    "color": "#1E90FF",
+    "emoji": "🚗"
+  },
+  {
+    "id": "cat-003",
+    "name": "Entertainment",
+    "amount": 200,
+    "used": 125.75,
+    "color": "#8A2BE2",
+    "emoji": "🎬"
+  },
+  {
+    "id": "cat-004",
+    "name": "Utilities",
+    "amount": 250,
+    "used": 210.25,
+    "color": "#FF8C00",
+    "emoji": "💡"
+  },
+  {
+    "id": "cat-005",
+    "name": "Shopping",
+    "amount": 400,
+    "used": 275,
+    "color": "#DC143C",
+    "emoji": "🛍️"
+  },
+  {
+    "id": "cat-006",
+    "name": "Health",
+    "amount": 150,
+    "used": 65,
+    "color": "#20B2AA",
+    "emoji": "❤️"
+  },
+  {
+    "id": "cat-007",
+    "name": "Housing",
+    "amount": 1200,
+    "used": 1200,
+    "color": "#4682B4",
+    "emoji": "🏠"
+  },
+  {
+    "id": "cat-008",
+    "name": "Travel",
+    "amount": 500,
+    "used": 325.4,
+    "color": "#00CED1",
+    "emoji": "✈️"
+  },
+  {
+    "id": "cat-009",
+    "name": "Education",
+    "amount": 300,
+    "used": 145,
+    "color": "#DAA520",
+    "emoji": "📚"
+  },
+  {
+    "id": "cat-010",
+    "name": "Subscriptions",
+    "amount": 100,
+    "used": 72.99,
+    "color": "#9932CC",
+    "emoji": "📱"
+  },
+  {
+    "id": "cat-011",
+    "name": "Personal Care",
+    "amount": 175,
+    "used": 98.5,
+    "color": "#FF69B4",
+    "emoji": "🧴"
+  },
+  {
+    "id": "cat-012",
+    "name": "Gifts",
+    "amount": 150,
+    "used": 85,
+    "color": "#FF6347",
+    "emoji": "🎁"
+  },
+  {
+    "id": "cat-013",
+    "name": "Pets",
+    "amount": 200,
+    "used": 110,
+    "color": "#A0522D",
+    "emoji": "🐾"
+  },
+  {
+    "id": "cat-014",
+    "name": "Bills",
+    "amount": 300,
+    "used": 175.5,
+    "color": "#708090",
+    "emoji": "🧾"
+  },
+  {
+    "id": "cat-015",
+    "name": "Fitness",
+    "amount": 125,
+    "used": 60,
+    "color": "#32CD32",
+    "emoji": "🏋️"
+  },
+  {
+    "id": "cat-016",
+    "name": "Savings",
+    "amount": 500,
+    "used": 350,
+    "color": "#4169E1",
+    "emoji": "💰"
+  }
+]

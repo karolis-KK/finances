@@ -1,40 +1,79 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState, type ChangeEvent } from "react"
 import type { Category } from "@/types/finance"
 import { Pie, PieChart, Cell, ResponsiveContainer, Tooltip } from "recharts"
-import { X, EuroIcon, Calendar } from 'lucide-react'
+import { X, EuroIcon, Calendar, ChevronLeft, ChevronRight } from "lucide-react"
+
+const CATEGORIES_PER_PAGE = 12
 
 type CategoryCardProps = {
   categories: Category[]
   onUpdateCategories: (categories: Category[]) => void
 }
 
-export default function CategoryCard({ categories, onUpdateCategories }: CategoryCardProps) {
-  const [amount, setAmount]: number = useState(0);
-  const [date, setDate] = useState('');
-  const [isOpenExpenseMenu, setIsOpenExpenseMenu]: boolean = useState(false);
+export default function CategoryCard({
+  categories,
+  onUpdateCategories,
+}: CategoryCardProps) {
+  const [amount, setAmount] = useState(0)
+  const [date, setDate] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
+  const [openExpenseCategoryId, setOpenExpenseCategoryId] = useState<string | null>(null) // arba string (category.id) arba null (nei vienas), pradinis value - null
+  const [categoryAlertId, setCategoryAlertId] = useState<string | null>(null)
+  const totalPages = Math.max(
+    Math.ceil(categories.length / CATEGORIES_PER_PAGE),
+    1,
+  )
+  const visibleCategories = categories.slice(
+    (currentPage - 1) * CATEGORIES_PER_PAGE,
+    currentPage * CATEGORIES_PER_PAGE,
+  )
 
-  const handleChangeAmount = (e): void => {
-    setAmount(Number(e.target.value));
+  useEffect(() => {
+    setCurrentPage((page) => Math.min(page, totalPages))
+  }, [totalPages])
+
+  const handleCategoryAlert = (categoryId: string): void => {
+    setCategoryAlertId(categoryId)
   }
 
-  const handleChangeDate = (e): void => {
+  const handleChangeAmount = (e: ChangeEvent<HTMLInputElement>): void => {
+    setAmount(Number(e.target.value))
+  }
+
+  const handleChangeDate = (e: ChangeEvent<HTMLInputElement>): void => {
     setDate(e.target.value)
   }
 
-  const handleOpenExpenseMenu = (): void => {
-    setIsOpenExpenseMenu((o: boolean) => !o)
+  const handleOpenExpenseMenu = (categoryId: string): void => {
+    setOpenExpenseCategoryId((openCategoryId) =>
+      openCategoryId === categoryId ? null : categoryId,
+    )
+  }
+
+  const handleAddExpenseMenu = (category: Category): void => {
+    if (category.used >= category.amount) {
+      handleCategoryAlert(category.id);
+      return
+    }
+
+    handleOpenExpenseMenu(category.id)
   }
 
   const handleAddExpense = (id: string) => {
-    onUpdateCategories(categories.map((category) => category.id === id ? { ...category, used: category.used + amount } : category))
-    setIsOpenExpenseMenu((o: boolean) => !o)
+    onUpdateCategories(
+      categories.map((category) =>
+        category.id === id
+          ? {...category, used: category.used + amount > category.amount ? category.amount : category.used + amount,} : category,
+      ),
+    )
+    setOpenExpenseCategoryId(null)
   }
-
   return (
-    <ul className="flex flex-wrap gap-6">
-      {categories.map((category) => {
+    <div className="flex flex-col items-center gap-6">
+      <ul className="grid grid-cols-6 grid-rows-2 gap-6">
+      {visibleCategories.map((category) => {
         const remaining = Math.max(category.amount - category.used, 0)
 
         const data = [
@@ -42,7 +81,7 @@ export default function CategoryCard({ categories, onUpdateCategories }: Categor
           { name: "Remaining", value: remaining },
         ]
         return (
-          <li key={category.id} className="relative overflow-hidden">
+          <li key={category.id} className="relative overflow-hidden col-span-1 row-span-1">
             <div className="bg-[#ccc5b9] pt-2 pb-4 pr-3 pl-3 rounded-md">
               <div className="flex items-center justify-center">
                 <h1 className="text-[#403d39] text-3xl">{category.name}</h1>
@@ -72,41 +111,91 @@ export default function CategoryCard({ categories, onUpdateCategories }: Categor
                 </span>
               </div>
               <button
-                onClick={handleOpenExpenseMenu}
+                onClick={() => handleAddExpenseMenu(category)}
                 className="flex w-full justify-center bg-[#fffcf2] text-[#403d39] hover:bg-[#fffcf2]/70 hover:cursor-pointer rounded-md p-2"
               >
-                Add expense
+                {categoryAlertId === category.id
+                  ? "You've used your limit"
+                  : "Add expense"}
               </button>
             </div>
             <div
               className={`absolute inset-0 flex flex-col bg-[#403d39] p-4 rounded-md transition-transform duration-300 ${
-                isOpenExpenseMenu ? "translate-x-0" : "translate-x-full"
+                openExpenseCategoryId === category.id
+                  ? "translate-x-0"
+                  : "translate-x-full"
               }`}
             >
-              <button className="hover:cursor-pointer flex justify-end text-right" onClick={handleOpenExpenseMenu}><X size={24} /></button>
+              <button
+                className="hover:cursor-pointer flex justify-end text-right"
+                onClick={() => handleOpenExpenseMenu(category.id)}
+              >
+                <X size={24} />
+              </button>
               <div className="relative -mt-1">
                 <label htmlFor="amount">Amount</label>
-                  <EuroIcon
-                    size={16}
-                    aria-hidden="true"
-                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 mt-3.5"
-                  />
-                <input onChange={handleChangeAmount} type="number" id="amount" className="border border-[#fffcf2]/20 mt-1 w-full pl-10 pt-2 pb-2 pr-2 rounded-md focus:outline-none focus:ring-0" />
+                <EuroIcon
+                  size={16}
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 mt-3.5"
+                />
+                <input
+                  onChange={handleChangeAmount}
+                  type="number"
+                  id="amount"
+                  className="border border-[#fffcf2]/20 mt-1 w-full pl-10 pt-2 pb-2 pr-2 rounded-md focus:outline-none focus:ring-0"
+                />
               </div>
-              <div className="relative mt-2">
+              <div className="relative mt-4">
                 <label htmlFor="date">Date</label>
                 <Calendar
-                    size={16}
-                    aria-hidden="true"
-                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 mt-3.5"
-                  />
-                <input onChange={handleChangeDate} type="date" id="date" className="border border-[#fffcf2]/20 mt-1 w-full pl-10 pt-2 pb-2 pr-2 rounded-md focus:outline-none focus:ring-0" />
+                  size={16}
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 mt-3.5"
+                />
+                <input
+                  onChange={handleChangeDate}
+                  type="date"
+                  id="date"
+                  className="border border-[#fffcf2]/20 mt-1 w-full pl-10 pt-2 pb-2 pr-2 rounded-md focus:outline-none focus:ring-0"
+                />
               </div>
-              <button onClick={() => handleAddExpense(category.id)} className="bg-[#fffcf2] text-[#403d39] p-2 mt-4 rounded-md hover:cursor-pointer hover:bg-[#fffcf2]/70">Add expense</button>
+              <button
+                onClick={() => handleAddExpense(category.id)}
+                className="bg-[#fffcf2] text-[#403d39] p-2 mt-8 rounded-md hover:cursor-pointer hover:bg-[#fffcf2]/70"
+              >
+                Add expense
+              </button>
             </div>
           </li>
         )
       })}
-    </ul>
+      </ul>
+      {totalPages > 1 && (
+        <nav aria-label="Category pages" className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => setCurrentPage((page) => page - 1)}
+            disabled={currentPage === 1}
+            aria-label="Previous page"
+            className="rounded-md bg-[#eb5e28] p-2 text-[#fffcf2] hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <ChevronLeft size={24} />
+          </button>
+          <span className="text-[#403d39]">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            type="button"
+            onClick={() => setCurrentPage((page) => page + 1)}
+            disabled={currentPage === totalPages}
+            aria-label="Next page"
+            className="rounded-md bg-[#eb5e28] p-2 text-[#fffcf2] hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <ChevronRight size={24} />
+          </button>
+        </nav>
+      )}
+    </div>
   )
 }
