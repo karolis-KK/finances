@@ -30,7 +30,7 @@ export default function Footer({
   }
 
   return (
-    <footer className="bg-[#ccc5b9] h-20 flex items-center justify-center p-2">
+    <footer className="bg-[#ccc5b9] bottom-0 w-full sticky lg:static z-20 h-20 flex items-center justify-center p-2">
       <div className="bg-[#eb5e28] flex items-center w-full h-full rounded-md justify-between p-2 pl-4 pr-4">
         <button onClick={handleStatsMenu} className="lg:hidden">
           <ChartNoAxesColumn

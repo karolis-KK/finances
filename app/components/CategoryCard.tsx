@@ -71,8 +71,8 @@ export default function CategoryCard({
     setOpenExpenseCategoryId(null)
   }
   return (
-    <div className="flex flex-col items-center gap-6">
-      <ul className="grid grid-cols-6 grid-rows-2 gap-6">
+    <div className="flex flex-col items-center lg:gap-6 pt-8 pb-8">
+      <ul className="grid lg:grid-cols-6 lg:grid-rows-2 lg:gap-6 lg:w-auto w-screen lg:p-4 pr-12 pl-12">
       {visibleCategories.map((category) => {
         const remaining = Math.max(category.amount - category.used, 0)
 
@@ -81,12 +81,12 @@ export default function CategoryCard({
           { name: "Remaining", value: remaining },
         ]
         return (
-          <li key={category.id} className="relative overflow-hidden col-span-1 row-span-1">
+          <li key={category.id} className="relative overflow-hidden col-span-1 row-span-1 pb-6 w-full">
             <div className="bg-[#ccc5b9] pt-2 pb-4 pr-3 pl-3 rounded-md">
               <div className="flex items-center justify-center">
                 <h1 className="text-[#403d39] text-3xl">{category.name}</h1>
               </div>
-              <div className="relative h-48 w-48">
+              <div className="relative h-48 lg:w-48">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
