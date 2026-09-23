@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState, type ChangeEvent } from "react"
-import type { Category } from "@/types/finance"
+import type { Category, Transaction } from "@/types/finance"
 import { Pie, PieChart, Cell, ResponsiveContainer, Tooltip } from "recharts"
 import InfoMenu from "./InfoMenu"
 import {
@@ -10,7 +10,7 @@ import {
   Calendar,
   ChevronLeft,
   ChevronRight,
-  Info,
+  Info
 } from "lucide-react"
 
 const CATEGORIES_PER_PAGE = 12
@@ -18,11 +18,15 @@ const CATEGORIES_PER_PAGE = 12
 type CategoryCardProps = {
   categories: Category[]
   onUpdateCategories: (categories: Category[]) => void
+  transactions: Transaction[]
+  onAddTransaction: (transaction: Transaction) => void
 }
 
 export default function CategoryCard({
   categories,
   onUpdateCategories,
+  transactions,
+  onAddTransaction
 }: CategoryCardProps) {
   const [amount, setAmount] = useState(0)
   const [date, setDate] = useState("")
@@ -63,6 +67,18 @@ export default function CategoryCard({
     setDate(e.target.value)
   }
 
+  const handleAddTransaction = (categoryId: string, amount: number, date: string): void => {
+    onAddTransaction(
+      {
+        id: `transaction-${crypto.randomUUID()}`,
+        amount: amount,
+        type: 'expense',
+        categoryId: categoryId,
+        date: date
+      }
+    )
+  }
+
   const handleOpenExpenseMenu = (categoryId: string): void => {
     setOpenExpenseCategoryId((openCategoryId) =>
       openCategoryId === categoryId ? null : categoryId,
@@ -79,6 +95,7 @@ export default function CategoryCard({
   }
 
   const handleAddExpense = (id: string) => {
+    handleAddTransaction(id, amount, date)
     onUpdateCategories(
       categories.map((category) =>
         category.id === id
@@ -109,12 +126,15 @@ export default function CategoryCard({
               key={category.id}
               className="relative col-span-1 row-span-1 w-full overflow-hidden"
             >
-              <InfoMenu handleOpenInfoMenu={handleOpenInfoMenu} isOpenInfoMenu={isOpenInfoMenu} category={category} />
+              <InfoMenu transactions={transactions} handleOpenInfoMenu={handleOpenInfoMenu} isOpenInfoMenu={isOpenInfoMenu} category={category} />
               <div className="bg-[#ccc5b9] pt-2 pb-4 pr-3 pl-3 rounded-md">
                 <div className="flex items-center justify-center">
                   <h1 className="text-[#403d39] text-3xl">{category.name}</h1>
                 </div>
-                <div className="relative h-48 lg:w-48">
+                <div className="mt-2 scale-80 flex justify-center items-center">
+                  <h1 className="bg-[#fffcf2] text-[#403d39] flex justify-center items-center rounded-md p-1">{category.used} / {category.amount} <EuroIcon className="ml-1" size={16} /></h1>
+                </div>
+                <div className="relative h-48 -mt-1 lg:w-48">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie

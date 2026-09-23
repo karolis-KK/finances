@@ -57,7 +57,7 @@ export default function CategoryMenu({ categoryMenu, onToggle, onAddCategory }: 
         <X size={28} />
       </button>
       <div className="mt-6">
-        <h1 className="text-3xl font-medium text-[#fffcf2]">Add a category</h1>
+        <h1 className="text-4xl font-medium text-[#fffcf2]">Add a category</h1>
         <p className="mt-2 text-[#fffcf2cc]">
           Enter a name, amount (budget), color and emoji
         </p>

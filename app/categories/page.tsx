@@ -3,12 +3,13 @@
 import Navbar from "../components/NavBar"
 import CategoryCard from "../components/CategoryCard"
 import { useEffect, useState } from "react"
-import type { Category } from "@/types/finance"
+import type { Category, Transaction } from "@/types/finance"
 import CategoryMenu from "../components/CategoryMenu"
 import Footer from "../components/Footer"
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([])
+  const [transactions, setTransactions] = useState<Transaction[]>([])
   const [categoryMenu, setCategoryMenu] = useState(false)
 
   useEffect(() => {
@@ -33,9 +34,9 @@ export default function CategoriesPage() {
   }
 
   return (
-    <section className="flex min-h-screen flex-col">
+    <section className="flex h-screen flex-col overflow-hidden">
       <Navbar />
-      <div className="flex flex-1 flex-col">
+      <div className="flex min-h-0 flex-1 flex-col">
         <CategoryMenu
           categoryMenu={categoryMenu}
           onToggle={handleCategoryMenu}
@@ -60,6 +61,10 @@ export default function CategoriesPage() {
             <CategoryCard
               categories={categories}
               onUpdateCategories={setCategories}
+              onAddTransaction={(transaction) =>
+                setTransactions((transactions) => [...transactions, transaction])
+              }
+              transactions={transactions}
             />
           </div>
         )}
