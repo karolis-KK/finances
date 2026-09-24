@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import type { Category, Transaction } from "@/types/finance"
 import { X, Euro } from "lucide-react"
@@ -18,9 +18,14 @@ export default function InfoMenu({
   transactions,
 }: InfoMenuProps) {
   const [isOpenTransactionsMenu, setIsOpenTransactionsMenu] = useState<string | null>(null)
+  const [transactionsButtonStatus, setTransactionsButtonStatus] = useState("View all")
 
   const openTransactionsMenu = (categoryId: string) => {
-    setIsOpenTransactionsMenu((isOpenTransactionsMenu) => (isOpenTransactionsMenu === categoryId ? null : categoryId))
+    setIsOpenTransactionsMenu((isOpenTransactionsMenu) =>
+      isOpenTransactionsMenu === categoryId ? null : categoryId,
+    )
+
+    setTransactionsButtonStatus((t) => t === "View all" ? "Shrink" : "View all")
   }
   const usagePercentage =
     category.amount > 0
@@ -34,6 +39,16 @@ export default function InfoMenu({
     )
     .slice(-5)
     .reverse()
+
+  let furtherExpenses = transactions
+    .filter(
+      (transaction) =>
+        transaction.categoryId === category.id &&
+        transaction.type === "expense",
+    )
+
+  furtherExpenses = furtherExpenses.slice(0, furtherExpenses.length - 5)
+  
 
   const categoryTransactions = (
     transactions: Transaction[],
@@ -125,13 +140,31 @@ export default function InfoMenu({
             </li>
           ))}
         </ul>
+        <ul className={`mt-2 flex-col flex gap-y-2 ${category.id === isOpenTransactionsMenu ? "flex" : "hidden"}`}>
+          {furtherExpenses.map((transaction) => (
+            <li
+              className="flex items-center justify-between"
+              key={transaction.id}
+            >
+              <span className="flex items-center">
+                {transaction.amount}
+                <span className="flex ml-2 items-center">
+                  [<Euro className="" size={16} />]
+                </span>
+              </span>
+              <span>{transaction.date}</span>
+            </li>
+          ))}
+        </ul>
         <div
           className={`justify-end mt-4 ${categoryTransactions(transactions, category.id).length > 5 ? "flex" : "hidden"}`}
         >
-          <button onClick={() => openTransactionsMenu(category.id)} className="bg-[#fffcf2] text-[#403d39] hover:bg-[#fffcf2]/70 hover:cursor-pointer rounded-md pt-2 pb-2 pl-4 pr-4">
-            View all
+          <button
+            onClick={() => openTransactionsMenu(category.id)}
+            className="bg-[#fffcf2] text-[#403d39] hover:bg-[#fffcf2]/70 hover:cursor-pointer rounded-md pt-2 pb-2 pl-4 pr-4"
+          >
+            {transactionsButtonStatus}
           </button>
-          <h1 className={`${category.id === isOpenTransactionsMenu ? 'flex' : 'hidden'}`}>yooo</h1>
         </div>
       </div>
     </aside>

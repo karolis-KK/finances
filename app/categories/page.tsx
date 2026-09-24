@@ -29,6 +29,23 @@ export default function CategoriesPage() {
     })
   }, [])
 
+  useEffect(() => {
+    const loadTransactions = async () => {
+      const response = await fetch("/sample_transactions.json")
+
+      if (!response.ok) {
+        throw new Error(`Failed to load transactions: ${response.status}`)
+      }
+      
+      const sampleTransactions: Transaction[] = await response.json();
+      setTransactions(sampleTransactions)
+    }
+
+    loadTransactions().catch((error: unknown) => {
+      console.error("Could not load sample transactions", error)
+    })
+  }, [])
+
   const handleCategoryMenu = () => {
     setCategoryMenu((isOpen) => !isOpen)
   }
