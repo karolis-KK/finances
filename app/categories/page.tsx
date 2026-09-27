@@ -2,49 +2,19 @@
 
 import Navbar from "../components/NavBar"
 import CategoryCard from "../components/CategoryCard"
-import { useEffect, useState } from "react"
-import type { Category, Transaction } from "@/types/finance"
+import { useState } from "react"
 import CategoryMenu from "../components/CategoryMenu"
 import Footer from "../components/Footer"
+import { useFinance } from "../context/FinanceContext"
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>([])
-  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const {
+    categories,
+    transactions,
+    setCategories,
+    setTransactions,
+  } = useFinance()
   const [categoryMenu, setCategoryMenu] = useState(false)
-
-  useEffect(() => {
-    const loadCategories = async () => {
-      const response = await fetch("/sample_categories.json")
-
-      if (!response.ok) {
-        throw new Error(`Failed to load categories: ${response.status}`)
-      }
-
-      const sampleCategories: Category[] = await response.json()
-      setCategories(sampleCategories)
-    }
-
-    loadCategories().catch((error: unknown) => {
-      console.error("Could not load sample categories.", error)
-    })
-  }, [])
-
-  useEffect(() => {
-    const loadTransactions = async () => {
-      const response = await fetch("/sample_transactions.json")
-
-      if (!response.ok) {
-        throw new Error(`Failed to load transactions: ${response.status}`)
-      }
-      
-      const sampleTransactions: Transaction[] = await response.json();
-      setTransactions(sampleTransactions)
-    }
-
-    loadTransactions().catch((error: unknown) => {
-      console.error("Could not load sample transactions", error)
-    })
-  }, [])
 
   const handleCategoryMenu = () => {
     setCategoryMenu((isOpen) => !isOpen)
