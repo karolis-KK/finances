@@ -6,14 +6,15 @@ import { Euro, ChartNoAxesColumn, X } from "lucide-react"
 
 type CategoryFooterProps = {
   categories: Category[]
-  onToggle: () => void
-  onAddCategory: (category: Category) => void
+  onToggle?: () => void
+  onAddCategory?: (category: Category) => void
+  page: string
 }
 
 export default function Footer({
   categories,
   onToggle,
-  onAddCategory,
+  page
 }: CategoryFooterProps) {
   let totalSpent: number = 0
   let totalBudget: number = 0
@@ -30,7 +31,7 @@ export default function Footer({
   }
 
   return (
-    <footer className="bg-[#ccc5b9] bottom-0 w-full sticky lg:static z-20 h-20 flex items-center justify-center p-2">
+    <footer className={`bg-[#ccc5b9] bottom-0 w-full sticky ${page === 'categories' ? 'lg:static' : 'lg:fixed'} z-20 h-20 flex items-center justify-center p-2`}>
       <div className="bg-[#eb5e28] flex items-center w-full h-full rounded-md justify-between p-2 pl-4 pr-4">
         <button onClick={handleStatsMenu} className="lg:hidden">
           <ChartNoAxesColumn
@@ -49,12 +50,14 @@ export default function Footer({
             <Euro size="30" />]
           </h1>
         </div>
-        <button
-          onClick={onToggle}
-          className="bg-[#fffcf2] hover:bg-[#fffcf2]/80 hover:cursor-pointer text-[#403d39] text-2xl font-medium p-1.5 rounded-md pl-3 pr-3"
-        >
-          Add category
-        </button>
+        {onToggle && (
+          <button
+            onClick={onToggle}
+            className="bg-[#fffcf2] hover:bg-[#fffcf2]/80 hover:cursor-pointer text-[#403d39] text-2xl font-medium p-1.5 rounded-md pl-3 pr-3"
+          >
+            Add category
+          </button>
+        )}
       </div>
       <div
         className={`fixed top-0 flex w-full items-end justify-between

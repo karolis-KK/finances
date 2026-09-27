@@ -60,6 +60,7 @@ export default function CategoriesPage() {
       categories={categories}
       onToggle={handleCategoryMenu}
       onAddCategory={(category) => setCategories((currentCategories) => [...currentCategories, category])}
+      page={'categories'}
     />
     </section>
   )
