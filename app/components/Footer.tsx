@@ -41,11 +41,11 @@ export default function Footer({
         <div className="justify-between lg:flex hidden items-center text-3xl gap-x-12">
           <h1>Total categories [{categories.length}]</h1>
           <h1 className="flex items-center">
-            Total spent [{totalSpent}
+            Total spent [{totalSpent.toFixed(2)}
             <Euro size="30" />]
           </h1>
           <h1 className="flex items-center">
-            Total budget [{totalBudget}
+            Total budget [{totalBudget.toFixed(2)}
             <Euro size="30" />]
           </h1>
         </div>

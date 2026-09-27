@@ -29,10 +29,9 @@ export default function CategoryCard({
   onAddTransaction
 }: CategoryCardProps) {
   const [amount, setAmount] = useState(0)
-  const [date, setDate] = useState("")
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [currentPage, setCurrentPage] = useState(1)
   const [openExpenseCategoryId, setOpenExpenseCategoryId] = useState<string | null>(null) // arba string (category.id) arba null (nei vienas), pradinis value - null
-  const [categoryAlertId, setCategoryAlertId] = useState<string | null>(null)
   const [isOpenInfoMenu, setIsOpenInfoMenu] = useState<string | null>(null);
 
   const totalPages = Math.max(
@@ -48,10 +47,6 @@ export default function CategoryCard({
   useEffect(() => {
     setCurrentPage((page) => Math.min(page, totalPages))
   }, [totalPages])
-
-  const handleCategoryAlert = (categoryId: string): void => {
-    setCategoryAlertId(categoryId)
-  }
 
   const handleOpenInfoMenu = (categoryId: string): void => {
     setIsOpenInfoMenu((openInfoMenuId) => 
@@ -77,6 +72,8 @@ export default function CategoryCard({
         date: date
       }
     )
+
+    setDate(new Date().toISOString().split('T')[0]);
   }
 
   const handleOpenExpenseMenu = (categoryId: string): void => {
@@ -87,7 +84,6 @@ export default function CategoryCard({
 
   const handleAddExpenseMenu = (category: Category): void => {
     if (category.used >= category.amount) {
-      handleCategoryAlert(category.id)
       return
     }
 
@@ -166,8 +162,8 @@ export default function CategoryCard({
                     onClick={() => handleAddExpenseMenu(category)}
                     className="flex w-full justify-center bg-[#fffcf2] text-[#403d39] hover:bg-[#fffcf2]/70 hover:cursor-pointer rounded-md p-2"
                   >
-                    {categoryAlertId === category.id
-                      ? "You've used your limit"
+                    {category.used >= category.amount
+                      ? "Limit full"
                       : "Add expense"}
                   </button>
                 </div>
