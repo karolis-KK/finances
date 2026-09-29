@@ -12,57 +12,42 @@ import {
   createHorizontalChart,
   Label,
 } from "recharts"
-import { Category, Transaction } from "@/types/finance"
+import { Transaction } from "@/types/finance"
 
 export default function Home() {
   const { categories, transactions } = useFinance()
 
-  type Month = {
-    label: string
-    amount?: number
-  }
-
-  const data: Month[] = [
-    { label: "Jan" },
-    { label: "Feb" },
-    { label: "Mar" },
-    { label: "Apr" },
-    { label: "May" },
-    { label: "Jun" },
-    { label: "Jul" },
-    { label: "Aug" },
-    { label: "Sep" },
-    { label: "Oct" },
-    { label: "Nov" },
-    { label: "Dec" },
-  ]
-
-  const generateData = (
-    categories: Category[],
-    transactions: Transaction[],
-  ): void => {
-    data.map((item) => [...currentItems, { amount }])
-  }
-
   type ChartData = {
     label: string
-    x: number
+    amount: number
   }
 
-  const da: ChartData[] = [
-    { label: "Jan", x: 400 },
-    { label: "Feb", x: 300 },
-    { label: "Mar", x: 200 },
-    { label: "Apr", x: 278 },
-    { label: "May", x: 189 },
-    { label: "Jun", x: 239 },
-    { label: "Jul", x: 239 },
-    { label: "Aug", x: 239 },
-    { label: "Sep", x: 239 },
-    { label: "Oct", x: 239 },
-    { label: "Nov", x: 239 },
-    { label: "Dec", x: 220 },
+  const months: ChartData[] = [
+    { label: "Jan", amount: 0 },
+    { label: "Feb", amount: 0 },
+    { label: "Mar", amount: 0 },
+    { label: "Apr", amount: 0 },
+    { label: "May", amount: 0 },
+    { label: "Jun", amount: 0 },
+    { label: "Jul", amount: 0 },
+    { label: "Aug", amount: 0 },
+    { label: "Sep", amount: 0 },
+    { label: "Oct", amount: 0 },
+    { label: "Nov", amount: 0 },
+    { label: "Dec", amount: 0 },
   ]
+
+  // map() creates one result for each month.
+  // filter() keeps transactions from the current month.
+  // slice() extracts the month from each YYYY-MM-DD date, and Number() converts it to a number.
+  // reduce() adds the matching transaction amounts into one monthly total.
+  const generateData = (transactions: Transaction[]): ChartData[] => {
+    return months.map((month, monthIndex) => ({
+      ...month, amount: transactions.filter((transaction) => Number(transaction.date.slice(5, 7)) - 1 === monthIndex,).reduce((total, transaction) => total + transaction.amount, 0),
+    }))
+  }
+
+  const data = generateData(transactions)
 
   const Typed = createHorizontalChart<ChartData, string, number>()({
     XAxis,
@@ -114,7 +99,7 @@ export default function Home() {
             />
             <Tooltip />
             <Typed.Line
-              dataKey="x"
+              dataKey="amount"
               name="Amount"
               stroke="#eb5e28"
               offset="20"
