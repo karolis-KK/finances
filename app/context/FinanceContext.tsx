@@ -37,9 +37,9 @@ export function FinanceProvider({ children }: FinanceProviderProps) {
     // load both sample data files and put content into react state
     const loadFinanceData = async () => {
       // fetch both files at the same time instead of waiting for one before starting the other.
-      const [categoriesResponse, transactionsResponse] = await Promise.all([
+      const [categoriesResponse] = await Promise.all([
         fetch("/sample_categories.json"),
-        fetch("/sample_transactions.json"),
+        //fetch("/sample_transactions.json"),
       ])
 
       // stop loading if the categories request returned an error
@@ -50,20 +50,15 @@ export function FinanceProvider({ children }: FinanceProviderProps) {
       }
 
       // stop loading if the transactions request returned an error
-      if (!transactionsResponse.ok) {
-        throw new Error(
-          `Failed to load transactions: ${transactionsResponse.status}`,
-        )
-      }
+      //
 
       // convert json responses into the ts data shapes
-      const [sampleCategories, sampleTransactions] = await Promise.all([
+      const [sampleCategories, ] = await Promise.all([
         categoriesResponse.json() as Promise<Category[]>,
-        transactionsResponse.json() as Promise<Transaction[]>,
+        //transactionsResponse.json() as Promise<Transaction[]>,
       ])
 
       setCategories(sampleCategories)
-      setTransactions(sampleTransactions)
     }
 
     loadFinanceData().catch((error: unknown) => {

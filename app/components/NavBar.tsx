@@ -16,7 +16,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="flex shadow-xs bg-[#ccc5b9] justify-between pl-4 pr-4 pt-2 pb-2">
+      <nav className="flex w-full shadow-xs bg-[#ccc5b9] justify-between pl-4 pr-4 pt-2 pb-2">
         <div className="size-12 bg-[#eb5e28] flex items-center justify-center text-4xl gap-x-3">
           <div>
           [

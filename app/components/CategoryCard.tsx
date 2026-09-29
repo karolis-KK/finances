@@ -108,7 +108,7 @@ export default function CategoryCard({
     setOpenExpenseCategoryId(null)
   }
   return (
-    <div className="flex flex-col items-center lg:gap-6 pt-8 pb-8">
+    <div className="flex flex-col items-center lg:gap-6 pt-4 pb-8">
       <ul className="grid lg:grid-cols-6 gap-6 lg:grid-rows-2 lg:gap-6 lg:w-auto w-screen lg:p-4 pr-12 pl-12">
         {visibleCategories.map((category) => {
           const remaining = Math.max(category.amount - category.used, 0)

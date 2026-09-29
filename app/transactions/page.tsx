@@ -89,9 +89,10 @@ export default function TransactionsPage() {
   }
 
   return (
-    <section className="flex min-h-screen flex-col items-center justify-center">
+    <section className="flex min-h-screen flex-col items-center">
       <Navbar />
-      {transactions.length !== 0 ? <div className="flex-1 pr-12 pl-12 pt-8 pb-28">
+      <div className="flex min-h-0 w-full flex-1 items-center justify-center pb-20">
+        {transactions.length !== 0 ? <div className="flex-1 pr-12 pl-12 pt-8 pb-28">
         <ul className="flex flex-col gap-4">
           {transactions.map((transaction) => (
             <li
@@ -155,8 +156,8 @@ export default function TransactionsPage() {
             </li>
           ))}
         </ul>
-      </div>: <h1 className="text-[#eb5e28] text-4xl">You haven't added any transactions</h1>}
-      
+        </div>: <h1 className="w-full text-center text-4xl text-[#eb5e28]">You haven't added any transactions</h1>}
+      </div>
       <Footer categories={categories} page={"transactions"} />
     </section>
   )
