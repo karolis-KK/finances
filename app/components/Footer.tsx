@@ -1,26 +1,45 @@
 "use client"
 
 import { useState } from "react"
-import type { Category } from "@/types/finance"
+import type { Category, Transaction } from "@/types/finance"
 import { Euro, ChartNoAxesColumn, X } from "lucide-react"
 
 type CategoryFooterProps = {
   categories: Category[]
+  transactions?: Transaction[]
   onToggle?: () => void
   onAddCategory?: (category: Category) => void
-  page: string
+  page: string,
+  months?: string[] | undefined,
+  currentMonth?: string,
+  handleMonth?: (e: React.ChangeEvent<HTMLSelectElement>) => void
+  handleClearMontlyAmount?: (currentMonth: string) => void
 }
 
 export default function Footer({
   categories,
+  transactions = [],
   onToggle,
   page,
+  months,
+  currentMonth,
+  handleMonth,
+  handleClearMontlyAmount
 }: CategoryFooterProps) {
   let totalSpent: number = 0
   let totalBudget: number = 0
 
+  transactions.forEach((transaction): void => {
+    if (
+      transaction.type === "expense" &&
+      currentMonth &&
+      months &&
+      currentMonth === months[Number(transaction.date.slice(5, 7)) - 1]
+    ) {
+      totalSpent += transaction.amount
+    }
+  })
   categories.forEach((c): void => {
-    totalSpent += c.used
     totalBudget += c.amount
   })
 
@@ -51,18 +70,23 @@ export default function Footer({
             Total budget [{totalBudget.toFixed(2)}
             <Euro size="30" />]
           </h1>
-          <div className="flex gap-4 items-center">
-            <div className="flex gap-2">
-              <h1>Month</h1>[
+          <div className={`${page === 'categories' ? 'flex' : 'hidden'} flex gap-4 items-center`}>
+            <div className="flex gap-2 items-center">
+              <h1>Month</h1>
               <select
-                name=""
-                id=""
+                value={currentMonth}
+                onChange={handleMonth}
+                name="month"
+                id="month"
                 className="bg-[#fffcf2] hover:bg-[#fffcf2]/80 hover:cursor-pointer text-[#403d39] text-2xl font-medium p-1.5 rounded-md pl-3 pr-3"
-              ></select>
-              ]
+              >
+                {months?.map((month) => (
+                  <option value={month} key={month}>{month}</option>
+                ))}
+              </select>
             </div>
             <div>
-              <button className="bg-[#fffcf2] hover:bg-[#fffcf2]/80 hover:cursor-pointer text-[#403d39] text-2xl font-medium p-1.5 rounded-md pl-3 pr-3">
+              <button onClick={() => handleClearMontlyAmount?.(currentMonth ?? "")} className="bg-[#fffcf2] hover:bg-[#fffcf2]/80 hover:cursor-pointer text-[#403d39] text-2xl font-medium p-1.5 rounded-md pl-3 pr-3">
                 Clear for month
               </button>
             </div>

@@ -160,10 +160,10 @@ export default function Home() {
   })
 
   return (
-    <section className="flex h-screen flex-col">
+    <section className="flex min-h-screen flex-col">
       <Navbar />
-      <div className="grid min-h-0 flex-1 grid-cols-3 gap-10 p-10">
-        <div className="col-span-2 h-full min-w-0 rounded-md bg-[#ccc5b9] pt-12 pr-12">
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 p-4 sm:gap-6 sm:p-6 lg:grid-cols-3 lg:gap-10 lg:p-10">
+        <div className="h-80 min-w-0 rounded-md bg-[#ccc5b9] p-4 sm:h-96 sm:p-6 lg:col-span-2 lg:h-full lg:pt-12 lg:pr-12">
           <Typed.LineChart
             style={{
               width: "100%",
@@ -209,7 +209,7 @@ export default function Home() {
             />
           </Typed.LineChart>
         </div>
-        <div className="col-span-1 h-full min-w-0 overflow-y-auto rounded-md bg-[#ccc5b9] p-10 text-[#252422]">
+        <div className="h-auto min-w-0 overflow-y-auto rounded-md bg-[#ccc5b9] p-4 text-[#252422] sm:p-6 lg:col-span-1 lg:h-full lg:p-10">
           <label htmlFor="month-select">Select month</label>
           <select onChange={(e) => setCurrentMonth(e.target.value)} value={currentMonth} name="month-select" id="month-select" className="border border-[#403d39]/20 mt-1 w-full pl-2 pt-2 pb-2 pr-2 rounded-md focus:outline-none focus:ring-0">
             {monthsSelect.map((month) => (

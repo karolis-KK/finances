@@ -3,12 +3,16 @@
 import type { Category, Transaction } from "@/types/finance"
 import { X, Euro } from "lucide-react"
 import { useState } from "react"
+import { useFinance } from "../context/FinanceContext"
 
 type InfoMenuProps = {
   category: Category
   isOpenInfoMenu: string | null
   handleOpenInfoMenu: (categoryId: string) => void
-  transactions: Transaction[]
+  transactions: Transaction[],
+  used: number,
+  currentMonth: string,
+  months: string[]
 }
 
 export default function InfoMenu({
@@ -16,9 +20,22 @@ export default function InfoMenu({
   isOpenInfoMenu,
   handleOpenInfoMenu,
   transactions,
+  used,
+  currentMonth,
+  months
 }: InfoMenuProps) {
   const [isOpenTransactionsMenu, setIsOpenTransactionsMenu] = useState<string | null>(null)
   const [transactionsButtonStatus, setTransactionsButtonStatus] = useState("View all")
+
+  const {
+    setCategories,
+    setTransactions
+  } = useFinance()
+
+  const handleDeleteCategory = (categoryId: string): void => {
+    setCategories(currentCategories => currentCategories.filter((category) => category.id !== categoryId))
+    setTransactions(currentTransactions => currentTransactions.filter((transaction) => transaction.categoryId !== categoryId))
+  }
 
   const openTransactionsMenu = (categoryId: string) => {
     setIsOpenTransactionsMenu((isOpenTransactionsMenu) =>
@@ -29,13 +46,14 @@ export default function InfoMenu({
   }
   const usagePercentage =
     category.amount > 0
-      ? Math.min((category.used / category.amount) * 100, 100)
+      ? Math.min((used / category.amount) * 100, 100)
       : 0
   const recentExpenses = transactions
     .filter(
       (transaction) =>
         transaction.categoryId === category.id &&
-        transaction.type === "expense",
+        transaction.type === "expense" &&
+        currentMonth === months[Number(transaction.date.slice(5, 7)) - 1]
     )
     .slice(-5)
     .reverse()
@@ -99,7 +117,7 @@ export default function InfoMenu({
             <Euro size={16} />]
           </div>
           <div className="flex items-center">
-            [{category.used}
+            [{used}
             <Euro size={16} />]
           </div>
         </div>
@@ -117,7 +135,7 @@ export default function InfoMenu({
       <div className="flex mt-4 justify-between">
         <h1 className="text-[#fffcf2cc]">Total left for the month</h1>
         <div className="flex items-center justify-center">
-          [{category.amount - category.used}
+          [{category.amount - used}
           <Euro size={16} />]
         </div>
       </div>
@@ -166,6 +184,11 @@ export default function InfoMenu({
             {transactionsButtonStatus}
           </button>
         </div>
+      </div>
+      <div className="flex items-center justify-end mt-4">
+        <button onClick={() => handleDeleteCategory(category.id)} className="bg-[#fffcf2] text-[#403d39] hover:bg-[#fffcf2]/70 hover:cursor-pointer rounded-md p-2">
+            Delete category
+        </button>
       </div>
     </aside>
   )

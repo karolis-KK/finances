@@ -33,7 +33,7 @@ export function FinanceProvider({ children }: FinanceProviderProps) {
   const [transactions, setTransactions] = useState<Transaction[]>([])
 
   // runs after the provider first appears in the browser
-  useEffect(() => {
+  /*useEffect(() => {
     // load both sample data files and put content into react state
     const loadFinanceData = async () => {
       // fetch both files at the same time instead of waiting for one before starting the other.
@@ -64,7 +64,7 @@ export function FinanceProvider({ children }: FinanceProviderProps) {
     loadFinanceData().catch((error: unknown) => {
       console.error("Could not load finance data.", error)
     })
-  }, []) // empty dependecy list - only laod on dom render
+  }, []) // empty dependecy list - only laod on dom render*/
 
   return (
     <FinanceContext.Provider

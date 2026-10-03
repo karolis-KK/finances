@@ -46,7 +46,7 @@ export default function TransactionMenu({
 
   return (
     <>
-        <div className={`fixed flex items-center justify-center inset-0 z-50 h-screen w-screen bg-[#252422]/40 ${transaction.id === openTransactionEditMenu ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className={`fixed flex items-center justify-center text-white inset-0 z-50 h-screen w-screen bg-[#252422]/40 ${transaction.id === openTransactionEditMenu ? 'translate-x-0' : 'translate-x-full'}`}>
             <div className="bg-[#252422] p-6 rounded-md">
                 <button className="hover:cursor-pointer" onClick={() => setOpenTransactionEditMenu((id) => transaction.id === id ? null : transaction.id)}><X size={20} /></button>
                 <div className="flex flex-col gap-1 mt-2">

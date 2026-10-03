@@ -20,6 +20,31 @@ export default function CategoriesPage() {
     setCategoryMenu((isOpen) => !isOpen)
   }
 
+  const months: string[] = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ]
+
+  const [currentMonth, setCurrentMonth] = useState(new Date().toLocaleDateString('en-US', { month: 'long' }))
+
+  const handleMonth = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+    setCurrentMonth(e.target.value)
+  }
+
+  const handleClearMontlyAmount = (currentMonth: string): void => {
+    setTransactions(currentTransactions => currentTransactions.filter((transaction) => (currentMonth !== months[Number(transaction.date.slice(5, 7)) - 1])))
+  }
+
   return (
     <section className="flex h-screen flex-col overflow-hidden">
       <Navbar />
@@ -47,20 +72,26 @@ export default function CategoriesPage() {
           <div className="flex flex-1 items-center justify-center">
             <CategoryCard
               categories={categories}
-              onUpdateCategories={setCategories}
               onAddTransaction={(transaction) =>
                 setTransactions((transactions) => [...transactions, transaction])
               }
               transactions={transactions}
+              currentMonth={currentMonth}
+              months={months}
             />
           </div>
         )}
       </div>
     <Footer
       categories={categories}
+      transactions={transactions}
       onToggle={handleCategoryMenu}
       onAddCategory={(category) => setCategories((currentCategories) => [...currentCategories, category])}
       page={'categories'}
+      months={months}
+      currentMonth={currentMonth}
+      handleMonth={handleMonth}
+      handleClearMontlyAmount={handleClearMontlyAmount}
     />
     </section>
   )

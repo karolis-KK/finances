@@ -17,16 +17,18 @@ const CATEGORIES_PER_PAGE = 12
 
 type CategoryCardProps = {
   categories: Category[]
-  onUpdateCategories: (categories: Category[]) => void
   transactions: Transaction[]
-  onAddTransaction: (transaction: Transaction) => void
+  onAddTransaction: (transaction: Transaction) => void,
+  currentMonth: string,
+  months: string[]
 }
 
 export default function CategoryCard({
   categories,
-  onUpdateCategories,
   transactions,
-  onAddTransaction
+  onAddTransaction,
+  currentMonth,
+  months
 }: CategoryCardProps) {
   const [amount, setAmount] = useState(0)
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
@@ -62,11 +64,22 @@ export default function CategoryCard({
     setDate(e.target.value)
   }
 
-  const handleAddTransaction = (categoryId: string, amount: number, date: string): void => {
+  const getUsedAmount = (categoryId: string, totalAmount: number, totalRemaining: number): number => {
+    return transactions
+      .filter(
+        (transaction) =>
+          transaction.categoryId === categoryId &&
+          transaction.type === "expense" &&
+          currentMonth === months[Number(transaction.date.slice(5, 7)) - 1],
+      )
+      .reduce((total, transaction) => total + transaction.amount <= totalAmount ? total + transaction.amount : totalRemaining, 0)
+  }
+
+  const handleAddTransaction = (categoryId: string, amount: number, date: string, totalRemaining: number): void => {
     onAddTransaction(
       {
         id: `transaction-${crypto.randomUUID()}`,
-        amount: amount,
+        amount: amount <= totalRemaining ? amount : totalRemaining,
         type: 'expense',
         categoryId: categoryId,
         date: date
@@ -83,38 +96,27 @@ export default function CategoryCard({
   }
 
   const handleAddExpenseMenu = (category: Category): void => {
-    if (category.used >= category.amount) {
+    if (getUsedAmount(category.id, category.amount, category.amount - category.used) >= category.amount) {
       return
     }
 
     handleOpenExpenseMenu(category.id)
   }
 
-  const handleAddExpense = (id: string) => {
-    handleAddTransaction(id, amount, date)
-    onUpdateCategories(
-      categories.map((category) =>
-        category.id === id
-          ? {
-              ...category,
-              used:
-                category.used + amount > category.amount
-                  ? category.amount
-                  : category.used + amount,
-            }
-          : category,
-      ),
-    )
+
+  const handleAddExpense = (id: string, totalRemaining: number) => {
+    handleAddTransaction(id, amount, date, totalRemaining)
     setOpenExpenseCategoryId(null)
   }
   return (
     <div className="flex flex-col items-center lg:gap-6 pt-4 pb-8">
       <ul className="grid lg:grid-cols-6 gap-6 lg:grid-rows-2 lg:gap-6 lg:w-auto w-screen lg:p-4 pr-12 pl-12">
         {visibleCategories.map((category) => {
-          const remaining = Math.max(category.amount - category.used, 0)
+          const used = getUsedAmount(category.id, category.amount, category.amount - category.used)
+          const remaining = Math.max(category.amount - used, 0)
 
           const data = [
-            { name: "Used", value: category.used },
+            { name: "Used", value: used },
             { name: "Remaining", value: remaining },
           ]
           return (
@@ -122,13 +124,13 @@ export default function CategoryCard({
               key={category.id}
               className="relative col-span-1 row-span-1 w-full overflow-hidden"
             >
-              <InfoMenu transactions={transactions} handleOpenInfoMenu={handleOpenInfoMenu} isOpenInfoMenu={isOpenInfoMenu} category={category} />
+              <InfoMenu transactions={transactions} handleOpenInfoMenu={handleOpenInfoMenu} isOpenInfoMenu={isOpenInfoMenu} category={category} used={getUsedAmount(category.id, category.amount, category.amount - category.used)} currentMonth={currentMonth} months={months} />
               <div className="bg-[#ccc5b9] pt-2 pb-4 pr-3 pl-3 rounded-md">
                 <div className="flex items-center justify-center">
                   <h1 className="text-[#403d39] text-3xl">{category.name}</h1>
                 </div>
                 <div className="mt-2 scale-80 flex justify-center items-center">
-                  <h1 className="bg-[#fffcf2] text-[#403d39] flex justify-center items-center rounded-md p-1">{category.used} / {category.amount} <EuroIcon className="ml-1" size={16} /></h1>
+                  <h1 className="bg-[#fffcf2] text-[#403d39] flex justify-center items-center rounded-md p-1">{used} / {category.amount} <EuroIcon className="ml-1" size={16} /></h1>
                 </div>
                 <div className="relative h-48 -mt-1 lg:w-48">
                   <ResponsiveContainer width="100%" height="100%">
@@ -162,7 +164,7 @@ export default function CategoryCard({
                     onClick={() => handleAddExpenseMenu(category)}
                     className="flex w-full justify-center bg-[#fffcf2] text-[#403d39] hover:bg-[#fffcf2]/70 hover:cursor-pointer rounded-md p-2"
                   >
-                    {category.used >= category.amount
+                    {used >= category.amount
                       ? "Limit full"
                       : "Add expense"}
                   </button>
@@ -210,7 +212,7 @@ export default function CategoryCard({
                   />
                 </div>
                 <button
-                  onClick={() => handleAddExpense(category.id)}
+                  onClick={() => handleAddExpense(category.id, remaining)}
                   className="bg-[#fffcf2] text-[#403d39] p-2 mt-8 rounded-md hover:cursor-pointer hover:bg-[#fffcf2]/70"
                 >
                   Add expense
