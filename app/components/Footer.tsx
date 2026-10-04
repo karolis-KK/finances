@@ -95,7 +95,7 @@ export default function Footer({
         {onToggle && (
           <button
             onClick={onToggle}
-            className="bg-[#fffcf2] hover:bg-[#fffcf2]/80 hover:cursor-pointer text-[#403d39] 2xl:text-2xl font-medium p-2 rounded-md pl-3 pr-3"
+            className="bg-[#fffcf2] hover:bg-[#fffcf2]/80 hover:cursor-pointer text-[#403d39] 2xl:text-2xl text-xl font-medium p-2 rounded-md pl-3 pr-3"
           >
             Add category
           </button>
