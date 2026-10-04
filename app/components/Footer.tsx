@@ -60,15 +60,15 @@ export default function Footer({
             size={46}
           />
         </button>
-        <div className="justify-between lg:flex hidden items-center text-3xl gap-x-12">
-          <h1>Total categories [{categories.length}]</h1>
+        <div className="justify-between lg:flex hidden items-center 2xl:text-3xl lg:text-xl gap-x-12">
+          <h1 className="">Total categories [{categories.length}]</h1>
           <h1 className="flex items-center">
             Total spent [{totalSpent.toFixed(2)}
-            <Euro size="30" />]
+            <Euro className="2xl:size-7.5 size-5" />]
           </h1>
           <h1 className="flex items-center">
             Total budget [{totalBudget.toFixed(2)}
-            <Euro size="30" />]
+            <Euro className="2xl:size-7.5 size-5" />]
           </h1>
           <div className={`${page === 'categories' ? 'flex' : 'hidden'} flex gap-4 items-center`}>
             <div className="flex gap-2 items-center">
@@ -78,7 +78,7 @@ export default function Footer({
                 onChange={handleMonth}
                 name="month"
                 id="month"
-                className="bg-[#fffcf2] hover:bg-[#fffcf2]/80 hover:cursor-pointer text-[#403d39] text-2xl font-medium p-1.5 rounded-md pl-3 pr-3"
+                className="bg-[#fffcf2] hover:bg-[#fffcf2]/80 hover:cursor-pointer text-[#403d39] 2xl:text-2xl font-medium p-2 rounded-md pl-3 pr-3"
               >
                 {months?.map((month) => (
                   <option value={month} key={month}>{month}</option>
@@ -86,7 +86,7 @@ export default function Footer({
               </select>
             </div>
             <div>
-              <button onClick={() => handleClearMontlyAmount?.(currentMonth ?? "")} className="bg-[#fffcf2] hover:bg-[#fffcf2]/80 hover:cursor-pointer text-[#403d39] text-2xl font-medium p-1.5 rounded-md pl-3 pr-3">
+              <button onClick={() => handleClearMontlyAmount?.(currentMonth ?? "")} className="bg-[#fffcf2] hover:bg-[#fffcf2]/80 hover:cursor-pointer text-[#403d39] 2xl:text-2xl font-medium p-1.5 rounded-md pl-3 pr-3">
                 Clear for month
               </button>
             </div>
@@ -95,7 +95,7 @@ export default function Footer({
         {onToggle && (
           <button
             onClick={onToggle}
-            className="bg-[#fffcf2] hover:bg-[#fffcf2]/80 hover:cursor-pointer text-[#403d39] text-2xl font-medium p-1.5 rounded-md pl-3 pr-3"
+            className="bg-[#fffcf2] hover:bg-[#fffcf2]/80 hover:cursor-pointer text-[#403d39] 2xl:text-2xl font-medium p-2 rounded-md pl-3 pr-3"
           >
             Add category
           </button>
