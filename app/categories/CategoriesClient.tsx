@@ -75,12 +75,11 @@ export default function CategoriesClient() {
           <div className="flex flex-1 items-center justify-center">
             <CategoryCard
               categories={categories}
-              /*onAddTransaction={(transaction) =>
-                setTransactions((transactions) => [...transactions, transaction])
-              }*/
+              setTransactions={setTransactions}
               transactions={transactions}
               currentMonth={currentMonth}
               months={months}
+              
             />
           </div>
         )}

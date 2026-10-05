@@ -1,68 +1,78 @@
-"use client"
+"use client";
 
-import { useEffect, useState, type ChangeEvent } from "react"
-import type { Category, Transaction } from "@/types/finance"
-import { Pie, PieChart, Cell, ResponsiveContainer, Tooltip } from "recharts"
-import InfoMenu from "./InfoMenu"
+import { useEffect, useState, type ChangeEvent } from "react";
+import type { Category, Transaction } from "@/types/finance";
+import { Pie, PieChart, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import InfoMenu from "./InfoMenu";
 import {
   X,
   EuroIcon,
   Calendar,
   ChevronLeft,
   ChevronRight,
-  Info
-} from "lucide-react"
+  Info,
+} from "lucide-react";
+import { addTransaction } from "../categories/actions";
+import { Dispatch, SetStateAction } from "react";
 
-const CATEGORIES_PER_PAGE = 12
+const CATEGORIES_PER_PAGE = 12;
 
 type CategoryCardProps = {
-  categories: Category[]
-  transactions: Transaction[]
+  categories: Category[],
+  transactions: Transaction[],
   currentMonth: string,
-  months: string[]
-}
+  months: string[],
+  setTransactions: Dispatch<SetStateAction<Transaction[]>>;
+};
 
 export default function CategoryCard({
   categories,
   transactions,
   currentMonth,
-  months
+  months,
+  setTransactions
 }: CategoryCardProps) {
-  const [amount, setAmount] = useState(0)
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0])
-  const [currentPage, setCurrentPage] = useState(1)
-  const [openExpenseCategoryId, setOpenExpenseCategoryId] = useState<string | null>(null) // arba string (category.id) arba null (nei vienas), pradinis value - null
+  const [amount, setAmount] = useState(0);
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [openExpenseCategoryId, setOpenExpenseCategoryId] = useState<
+    string | null
+  >(null); // arba string (category.id) arba null (nei vienas), pradinis value - null
   const [isOpenInfoMenu, setIsOpenInfoMenu] = useState<string | null>(null);
 
   const totalPages = Math.max(
     Math.ceil(categories.length / CATEGORIES_PER_PAGE),
     1,
-  )
+  );
 
   const visibleCategories = categories.slice(
     (currentPage - 1) * CATEGORIES_PER_PAGE,
     currentPage * CATEGORIES_PER_PAGE,
-  )
+  );
 
   useEffect(() => {
-    setCurrentPage((page) => Math.min(page, totalPages))
-  }, [totalPages])
+    setCurrentPage((page) => Math.min(page, totalPages));
+  }, [totalPages]);
 
   const handleOpenInfoMenu = (categoryId: string): void => {
-    setIsOpenInfoMenu((openInfoMenuId) => 
-      openInfoMenuId === categoryId ? null : categoryId
-    )
-  }
+    setIsOpenInfoMenu((openInfoMenuId) =>
+      openInfoMenuId === categoryId ? null : categoryId,
+    );
+  };
 
   const handleChangeAmount = (e: ChangeEvent<HTMLInputElement>): void => {
-    setAmount(Number(e.target.value))
-  }
+    setAmount(Number(e.target.value));
+  };
 
   const handleChangeDate = (e: ChangeEvent<HTMLInputElement>): void => {
-    setDate(e.target.value)
-  }
+    setDate(e.target.value);
+  };
 
-  const getUsedAmount = (categoryId: string, totalAmount: number, totalRemaining: number): number => {
+  const getUsedAmount = (
+    categoryId: string,
+    totalAmount: number,
+    totalRemaining: number,
+  ): number => {
     return transactions
       .filter(
         (transaction) =>
@@ -70,66 +80,102 @@ export default function CategoryCard({
           transaction.type === "expense" &&
           currentMonth === months[Number(transaction.date.slice(5, 7)) - 1],
       )
-      .reduce((total, transaction) => total + transaction.amount <= totalAmount ? total + transaction.amount : totalRemaining, 0)
-  }
+      .reduce(
+        (total, transaction) =>
+          total + transaction.amount <= totalAmount
+            ? total + transaction.amount
+            : totalRemaining,
+        0,
+      );
+  };
 
-  const handleAddTransaction = (categoryId: string, amount: number, date: string, totalRemaining: number): void => {
-    /*onAddTransaction(
+  const handleAddTransaction = async (
+    categoryId: string,
+    amount: number,
+    date: string,
+    totalRemaining: number,
+  ): Promise<void> => {
+    const transaction = await addTransaction(
       {
-        id: `transaction-${crypto.randomUUID()}`,
-        amount: amount <= totalRemaining ? amount : totalRemaining,
-        type: 'expense',
-        categoryId: categoryId,
-        date: date
-      }
-    )*/
+        amount,
+        type: "expense",
+        date,
+        categoryId,
+      },
+      categoryId,
+    );
 
-    setDate(new Date().toISOString().split('T')[0]);
-  }
+    setTransactions((currentTransactions) => ([transaction, ...currentTransactions]))
+    setDate(new Date().toISOString().split("T")[0]);
+  };
 
   const handleOpenExpenseMenu = (categoryId: string): void => {
     setOpenExpenseCategoryId((openCategoryId) =>
       openCategoryId === categoryId ? null : categoryId,
-    )
-  }
+    );
+  };
 
   const handleAddExpenseMenu = (category: Category): void => {
-    if (getUsedAmount(category.id, category.amount, category.amount - category.used) >= category.amount) {
-      return
+    if (
+      getUsedAmount(
+        category.id,
+        category.amount,
+        category.amount - category.used,
+      ) >= category.amount
+    ) {
+      return;
     }
 
-    handleOpenExpenseMenu(category.id)
-  }
-
+    handleOpenExpenseMenu(category.id);
+  };
 
   const handleAddExpense = (id: string, totalRemaining: number) => {
-    handleAddTransaction(id, amount, date, totalRemaining)
-    setOpenExpenseCategoryId(null)
-  }
+    handleAddTransaction(id, amount, date, totalRemaining);
+    setOpenExpenseCategoryId(null);
+  };
   return (
     <div className="flex flex-col items-center lg:gap-6 pt-4 pb-8">
       <ul className="grid lg:grid-cols-6 gap-6 lg:grid-rows-2 lg:gap-6 lg:w-auto w-screen lg:p-4 pr-12 pl-12">
         {visibleCategories.map((category) => {
-          const used = getUsedAmount(category.id, category.amount, category.amount - category.used)
-          const remaining = Math.max(category.amount - used, 0)
+          const used = getUsedAmount(
+            category.id,
+            category.amount,
+            category.amount - category.used,
+          );
+          const remaining = Math.max(category.amount - used, 0);
 
           const data = [
             { name: "Used", value: used },
             { name: "Remaining", value: remaining },
-          ]
+          ];
           return (
             <li
               key={category.id}
               id={category.id}
               className="relative col-span-1 row-span-1 w-full overflow-hidden"
             >
-              <InfoMenu transactions={transactions} handleOpenInfoMenu={handleOpenInfoMenu} isOpenInfoMenu={isOpenInfoMenu} category={category} used={getUsedAmount(category.id, category.amount, category.amount - category.used)} currentMonth={currentMonth} months={months} />
+              <InfoMenu
+                transactions={transactions}
+                handleOpenInfoMenu={handleOpenInfoMenu}
+                isOpenInfoMenu={isOpenInfoMenu}
+                category={category}
+                used={getUsedAmount(
+                  category.id,
+                  category.amount,
+                  category.amount - category.used,
+                )}
+                currentMonth={currentMonth}
+                months={months}
+              />
               <div className="bg-[#ccc5b9] pt-2 pb-4 pr-3 pl-3 rounded-md">
                 <div className="flex items-center justify-center">
                   <h1 className="text-[#403d39] text-3xl">{category.name}</h1>
                 </div>
                 <div className="mt-2 scale-80 flex justify-center items-center">
-                  <h1 className="bg-[#fffcf2] text-[#403d39] flex justify-center items-center rounded-md p-1">{used} / {category.amount} <EuroIcon className="ml-1" size={16} /></h1>
+                  <h1 className="bg-[#fffcf2] text-[#403d39] flex justify-center items-center rounded-md p-1">
+                    {used} / {category.amount}{" "}
+                    <EuroIcon className="ml-1" size={16} />
+                  </h1>
                 </div>
                 <div className="relative h-48 -mt-1 lg:w-48">
                   <ResponsiveContainer width="100%" height="100%">
@@ -156,16 +202,17 @@ export default function CategoryCard({
                   </span>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => handleOpenInfoMenu(category.id)} className="bg-[#fffcf2] text-[#403d39] hover:bg-[#fffcf2]/70 hover:cursor-pointer rounded-md p-2">
+                  <button
+                    onClick={() => handleOpenInfoMenu(category.id)}
+                    className="bg-[#fffcf2] text-[#403d39] hover:bg-[#fffcf2]/70 hover:cursor-pointer rounded-md p-2"
+                  >
                     <Info size={24} />
                   </button>
                   <button
                     onClick={() => handleAddExpenseMenu(category)}
                     className="flex w-full justify-center bg-[#fffcf2] text-[#403d39] hover:bg-[#fffcf2]/70 hover:cursor-pointer rounded-md p-2"
                   >
-                    {used >= category.amount
-                      ? "Limit full"
-                      : "Add expense"}
+                    {used >= category.amount ? "Limit full" : "Add expense"}
                   </button>
                 </div>
               </div>
@@ -218,7 +265,7 @@ export default function CategoryCard({
                 </button>
               </div>
             </li>
-          )
+          );
         })}
       </ul>
       {totalPages > 1 && (
@@ -247,5 +294,5 @@ export default function CategoryCard({
         </nav>
       )}
     </div>
-  )
+  );
 }

@@ -1,12 +1,20 @@
 "use server"
 
 import { prisma } from '@/lib/prisma'
+import type { TransactionType } from '@/types/finance'
 
 type Category = {
     name: string
     amount: number
     color?: string
     emoji?: string
+}
+
+type Transaction = {
+    amount: number,
+    type: TransactionType,
+    categoryId: string,
+    date: string
 }
 
 export async function createCategory(newCategory: Category) {
@@ -38,6 +46,38 @@ export async function deleteCategory(categoryId: string) {
     })
     }
     catch (error) {
-        console.warn(`${error}, category with ${categoryId} was not found`)
+        console.warn(`${error}, category with the ${categoryId} was not found`)
+    }
+}
+
+export async function addTransaction(newTransaction: Transaction, categoryId: string) {
+    const transaction = await prisma.transaction.create({
+        data: {
+            amount: newTransaction.amount,
+            type: newTransaction.type,
+            date: new Date(newTransaction.date),
+            categoryId
+        }
+    })
+
+    return {
+        id: transaction.id,
+        amount: transaction.amount,
+        type: transaction.type as TransactionType,
+        categoryId: transaction.categoryId,
+        date: transaction.date.toISOString().slice(0, 10),
+    }
+}
+
+export async function deleteTransaction(transactionId: string) {
+    try {
+        return await prisma.transaction.delete({
+        where: {
+            id: transactionId,
+        }
+    })
+    }
+    catch (error) {
+        console.warn(`${error}, transaction with the ${transactionId} was not found`)
     }
 }
