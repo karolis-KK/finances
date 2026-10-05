@@ -13,25 +13,22 @@ import {
   Info,
 } from "lucide-react";
 import { addTransaction } from "../categories/actions";
-import { Dispatch, SetStateAction } from "react";
+import { useFinance } from "../context/FinanceContext";
 
 const CATEGORIES_PER_PAGE = 12;
 
 type CategoryCardProps = {
-  categories: Category[],
-  transactions: Transaction[],
-  currentMonth: string,
-  months: string[],
-  setTransactions: Dispatch<SetStateAction<Transaction[]>>;
+  categories: Category[];
+  currentMonth: string;
+  months: string[];
 };
 
 export default function CategoryCard({
   categories,
-  transactions,
   currentMonth,
   months,
-  setTransactions
 }: CategoryCardProps) {
+  const { transactions, setTransactions } = useFinance();
   const [amount, setAmount] = useState(0);
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -54,6 +51,20 @@ export default function CategoryCard({
     setCurrentPage((page) => Math.min(page, totalPages));
   }, [totalPages]);
 
+  // laukia kol pasikeis currentMonth ir tada pakeicia puslapio wide data, kuria naudojame prideti nauja transaction
+  useEffect(() => {
+    const selectedMonthIndex = months.indexOf(currentMonth);
+    if (selectedMonthIndex < 0) {
+      return;
+    }
+
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(selectedMonthIndex + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    setDate(`${year}-${month}-${day}`);
+  }, [currentMonth]);
+
   const handleOpenInfoMenu = (categoryId: string): void => {
     setIsOpenInfoMenu((openInfoMenuId) =>
       openInfoMenuId === categoryId ? null : categoryId,
@@ -71,22 +82,28 @@ export default function CategoryCard({
   const getUsedAmount = (
     categoryId: string,
     totalAmount: number,
-    totalRemaining: number,
+    currentMonth: string,
   ): number => {
-    return transactions
-      .filter(
-        (transaction) =>
+    const selectedMonthIndex = months.indexOf(currentMonth);
+    if (selectedMonthIndex < 0) {
+      return 0;
+    }
+
+    const selectedYear = new Date().getFullYear();
+    const usedAmount = transactions
+      .filter((transaction) => {
+        const transactionDate = new Date(`${transaction.date}T00:00:00`);
+
+        return (
           transaction.categoryId === categoryId &&
           transaction.type === "expense" &&
-          currentMonth === months[Number(transaction.date.slice(5, 7)) - 1],
-      )
-      .reduce(
-        (total, transaction) =>
-          total + transaction.amount <= totalAmount
-            ? total + transaction.amount
-            : totalRemaining,
-        0,
-      );
+          transactionDate.getFullYear() === selectedYear &&
+          transactionDate.getMonth() === selectedMonthIndex
+        );
+      })
+      .reduce((total, transaction) => total + transaction.amount, 0);
+
+    return Math.min(usedAmount, totalAmount);
   };
 
   const handleAddTransaction = async (
@@ -97,7 +114,7 @@ export default function CategoryCard({
   ): Promise<void> => {
     const transaction = await addTransaction(
       {
-        amount,
+        amount: amount > totalRemaining ? totalRemaining : amount,
         type: "expense",
         date,
         categoryId,
@@ -105,7 +122,12 @@ export default function CategoryCard({
       categoryId,
     );
 
-    setTransactions((currentTransactions) => ([transaction, ...currentTransactions]))
+    console.log("created", transaction);
+
+    setTransactions((currentTransactions) => [
+      transaction,
+      ...currentTransactions,
+    ]);
     setDate(new Date().toISOString().split("T")[0]);
   };
 
@@ -117,11 +139,8 @@ export default function CategoryCard({
 
   const handleAddExpenseMenu = (category: Category): void => {
     if (
-      getUsedAmount(
-        category.id,
-        category.amount,
-        category.amount - category.used,
-      ) >= category.amount
+      getUsedAmount(category.id, category.amount, currentMonth) >=
+      category.amount
     ) {
       return;
     }
@@ -129,8 +148,8 @@ export default function CategoryCard({
     handleOpenExpenseMenu(category.id);
   };
 
-  const handleAddExpense = (id: string, totalRemaining: number) => {
-    handleAddTransaction(id, amount, date, totalRemaining);
+  const handleAddExpense = async (id: string, totalRemaining: number) => {
+    await handleAddTransaction(id, amount, date, totalRemaining);
     setOpenExpenseCategoryId(null);
   };
   return (
@@ -140,7 +159,7 @@ export default function CategoryCard({
           const used = getUsedAmount(
             category.id,
             category.amount,
-            category.amount - category.used,
+            currentMonth,
           );
           const remaining = Math.max(category.amount - used, 0);
 
@@ -159,11 +178,7 @@ export default function CategoryCard({
                 handleOpenInfoMenu={handleOpenInfoMenu}
                 isOpenInfoMenu={isOpenInfoMenu}
                 category={category}
-                used={getUsedAmount(
-                  category.id,
-                  category.amount,
-                  category.amount - category.used,
-                )}
+                used={getUsedAmount(category.id, category.amount, currentMonth)}
                 currentMonth={currentMonth}
                 months={months}
               />

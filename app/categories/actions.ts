@@ -59,7 +59,6 @@ export async function addTransaction(newTransaction: Transaction, categoryId: st
             categoryId
         }
     })
-
     return {
         id: transaction.id,
         amount: transaction.amount,
@@ -94,10 +93,49 @@ export async function editTransaction(oldTransaction: Transaction, transactionId
     })
 
     return {
-        id: transactionId,
-        amount: newAmount,
-        type: oldTransaction.type,
-        categoryId: oldTransaction.categoryId,
-        date: newDate
+        id: editedTransaction.id,
+        amount: editedTransaction.amount,
+        type: editedTransaction.type as TransactionType,
+        categoryId: editedTransaction.categoryId,
+        date: editedTransaction.date.toISOString().slice(0, 10),
+    }
+}
+
+export async function clearMonthlyTransactions(currentMonth: string) {
+    const months: string[] = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ];
+
+    const monthNumber = months.indexOf(currentMonth)
+
+    try {
+        const year = new Date().getFullYear()
+        const month = monthNumber
+        const startOfMonth = new Date(year, month, 1)
+        const startOfNextMonth = new Date(year, month + 1, 1)
+
+        console.log(startOfMonth)
+        return await prisma.transaction.deleteMany({
+            where: {
+                date: {
+                    gte: startOfMonth,
+                    lt: startOfNextMonth,
+                },
+            }
+        })
+    }
+    catch (error) {
+        console.error(`${error}, transactions from ${currentMonth} were not found`)
     }
 }

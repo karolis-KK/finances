@@ -12,8 +12,8 @@ type CategoryFooterProps = {
   page: string;
   months?: string[] | undefined;
   currentMonth?: string;
-  //handleMonth?: (e: React.ChangeEvent<HTMLSelectElement>) => void
-  //handleClearMontlyAmount?: (currentMonth: string) => void
+  handleMonth?: (e: React.ChangeEvent<HTMLSelectElement>) => void
+  handleClearMontlyAmount?: (currentMonth: string) => void
 };
 
 export default function Footer({
@@ -23,8 +23,8 @@ export default function Footer({
   page,
   months,
   currentMonth,
-  //handleMonth,
-  // handleClearMontlyAmount
+  handleMonth,
+  handleClearMontlyAmount
 }: CategoryFooterProps) {
   let totalSpent: number = 0;
   let totalBudget: number = 0;
@@ -73,13 +73,13 @@ export default function Footer({
             <Euro className="2xl:size-7.5 size-5" />]
           </h1>
           <div
-            className={`${page === "categories" ? "flex" : "hidden"} flex gap-4 items-center`}
+            className={`flex gap-4 items-center`}
           >
             <div className="flex gap-2 items-center">
               <h1>Month</h1>
               <select
                 value={currentMonth}
-                //onChange={handleMonth}
+                onChange={handleMonth}
                 name="month"
                 id="month"
                 className="bg-[#fffcf2] hover:bg-[#fffcf2]/80 hover:cursor-pointer text-[#403d39] 2xl:text-2xl font-medium p-2 rounded-md pl-3 pr-3"
@@ -93,7 +93,7 @@ export default function Footer({
             </div>
             <div>
               <button
-                /*onClick={() => handleClearMontlyAmount?.(currentMonth ?? "")}*/ className="bg-[#fffcf2] hover:bg-[#fffcf2]/80 hover:cursor-pointer text-[#403d39] 2xl:text-2xl font-medium p-1.5 rounded-md pl-3 pr-3"
+                onClick={() => handleClearMontlyAmount?.(currentMonth ?? "")} className="bg-[#fffcf2] hover:bg-[#fffcf2]/80 hover:cursor-pointer text-[#403d39] 2xl:text-2xl font-medium p-1.5 rounded-md pl-3 pr-3"
               >
                 Clear for month
               </button>

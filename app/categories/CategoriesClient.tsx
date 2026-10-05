@@ -6,14 +6,11 @@ import Footer from "../components/Footer";
 import CategoryMenu from "../components/CategoryMenu";
 import CategoryCard from "../components/CategoryCard";
 import { useFinance } from "../context/FinanceContext";
+import { clearMonthlyTransactions } from "./actions";
 
 export default function CategoriesClient() {
-  const {
-  categories,
-  transactions,
-  setCategories,
-  setTransactions,
-} = useFinance()
+  const { categories, transactions, setCategories, setTransactions } =
+    useFinance();
   const [categoryMenu, setCategoryMenu] = useState(false);
 
   const handleCategoryMenu = () => {
@@ -43,11 +40,17 @@ export default function CategoriesClient() {
     setCurrentMonth(e.target.value);
   };
 
-  /*
-  const handleClearMontlyAmount = (currentMonth: string): void => {
-    setTransactions(currentTransactions => currentTransactions.filter((transaction) => (currentMonth !== months[Number(transaction.date.slice(5, 7)) - 1])))
-  }
-  */
+  const handleClearMontlyAmount = async (
+    currentMonth: string,
+  ): Promise<void> => {
+    const transactions = await clearMonthlyTransactions(currentMonth);
+    setTransactions((currentTransactions) =>
+      currentTransactions.filter(
+        (transaction) =>
+          currentMonth !== months[Number(transaction.date.slice(5, 7)) - 1],
+      ),
+    );
+  };
 
   return (
     <section className="flex h-screen flex-col overflow-hidden">
@@ -75,11 +78,8 @@ export default function CategoriesClient() {
           <div className="flex flex-1 items-center justify-center">
             <CategoryCard
               categories={categories}
-              setTransactions={setTransactions}
-              transactions={transactions}
               currentMonth={currentMonth}
               months={months}
-              
             />
           </div>
         )}
@@ -88,12 +88,14 @@ export default function CategoriesClient() {
         categories={categories}
         transactions={transactions}
         onToggle={handleCategoryMenu}
-        onAddCategory={(category) => setCategories((currentCategories) => [category, ...currentCategories])}
+        onAddCategory={(category) =>
+          setCategories((currentCategories) => [category, ...currentCategories])
+        }
         page={"categories"}
         months={months}
         currentMonth={currentMonth}
-        //handleMonth={handleMonth}
-        //handleClearMontlyAmount={handleClearMontlyAmount}
+        handleMonth={handleMonth}
+        handleClearMontlyAmount={handleClearMontlyAmount}
       />
     </section>
   );
