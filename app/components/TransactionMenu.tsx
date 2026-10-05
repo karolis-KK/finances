@@ -11,7 +11,7 @@ type TransactionMenuProps = {
   handleOpen: (transactionId: string) => void
   handleDeleteTransaction: (transactionId: string) => void
   handleEditTransaction: (
-    transactionId: string,
+    transaction: Transaction,
     newAmount: number,
     newDate: string,
   ) => void
@@ -39,9 +39,9 @@ export default function TransactionMenu({
     setOpenTransactionEditMenu((id) => transactionId === id ? null : transactionId)
   }
 
-  const handleEditTransactionSave = (transactionId: string): void => {
-    handleEditTransaction(transactionId, newAmount, newDate)
-    setOpenTransactionEditMenu((id) => transactionId === id ? null : transactionId)
+  const handleEditTransactionSave = (transaction: Transaction): void => {
+    handleEditTransaction(transaction,  newAmount, newDate)
+    setOpenTransactionEditMenu((id) => transaction.id === id ? null : transaction.id)
   }
 
   return (
@@ -80,7 +80,7 @@ export default function TransactionMenu({
                         />
                     </div>
                 </div>
-                <button onClick={() => handleEditTransactionSave(transaction.id)} className="hover:cursor-pointer bg-[#fffcf2] pt-1.5 pb-1.5 pl-4 pr-4 rounded-md hover:bg-[#fffcf2]/70 text-[#252422] mt-4 w-full">Save</button>
+                <button onClick={() => handleEditTransactionSave(transaction)} className="hover:cursor-pointer bg-[#fffcf2] pt-1.5 pb-1.5 pl-4 pr-4 rounded-md hover:bg-[#fffcf2]/70 text-[#252422] mt-4 w-full">Save</button>
             </div>
         </div>
         <aside

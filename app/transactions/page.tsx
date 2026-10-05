@@ -6,7 +6,8 @@ import TransactionMenu from "../components/TransactionMenu";
 import { useFinance } from "../context/FinanceContext";
 import { Euro, EuroIcon, EllipsisVertical } from "lucide-react";
 import { useState } from "react";
-import { deleteTransaction } from "../categories/actions";
+import { deleteTransaction, editTransaction } from "../categories/actions";
+import { Transaction } from "@/types/finance";
 
 export default function TransactionsPage() {
   const { categories, transactions, setCategories, setTransactions } =
@@ -26,8 +27,8 @@ export default function TransactionsPage() {
   ): Promise<void> => {
     const transaction = await deleteTransaction(transactionId);
 
-    if(!transaction) {
-      return
+    if (!transaction) {
+      return;
     }
 
     setTransactions((currentTransactions) =>
@@ -40,40 +41,27 @@ export default function TransactionsPage() {
   };
 
   const handleEditTransaction = async (
-    transactionId: string,
+    transaction: Transaction,
     newAmount: number,
     newDate: string,
   ): Promise<void> => {
-    const transactionToEdit = transactions.find(
-      (transaction) => transaction.id === transactionId,
+    const newTransaction = await editTransaction(
+      transaction,
+      transaction.id,
+      newAmount,
+      newDate,
     );
 
-    if (!transactionToEdit) {
+    if (!newTransaction) {
       return;
     }
 
-    setTransactions((currentTransactions) =>
-      currentTransactions.map((transaction) =>
-        transaction.id === transactionId
-          ? { ...transaction, amount: newAmount, date: newDate }
-          : transaction,
+    setTransactions((currentTransactions) => [
+      newTransaction,
+      ...currentTransactions.filter(
+        (transaction) => transaction.id !== newTransaction.id,
       ),
-    );
-
-    if (transactionToEdit.type === "expense") {
-      const amountDifference = newAmount - transactionToEdit.amount;
-
-      setCategories((currentCategories) =>
-        currentCategories.map((category) =>
-          category.id === transactionToEdit.categoryId
-            ? {
-                ...category,
-                used: Math.max(category.used + amountDifference, 0),
-              }
-            : category,
-        ),
-      );
-    }
+    ]);
   };
 
   return (

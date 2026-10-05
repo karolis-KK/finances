@@ -81,3 +81,23 @@ export async function deleteTransaction(transactionId: string) {
         console.warn(`${error}, transaction with the ${transactionId} was not found`)
     }
 }
+
+export async function editTransaction(oldTransaction: Transaction, transactionId: string, newAmount: number, newDate: string) {
+    const editedTransaction = await prisma.transaction.update({
+        where: {
+            id: transactionId
+        },
+        data: {
+            amount: newAmount,
+            date: new Date(newDate)
+        }
+    })
+
+    return {
+        id: transactionId,
+        amount: newAmount,
+        type: oldTransaction.type,
+        categoryId: oldTransaction.categoryId,
+        date: newDate
+    }
+}

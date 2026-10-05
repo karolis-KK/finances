@@ -7,8 +7,8 @@ import { Euro, ChartNoAxesColumn, X } from "lucide-react";
 type CategoryFooterProps = {
   categories: Category[];
   transactions?: Transaction[];
-  onToggle?: () => void
-  onAddCategory?: (category: Category) => void
+  onToggle?: () => void;
+  onAddCategory?: (category: Category) => void;
   page: string;
   months?: string[] | undefined;
   currentMonth?: string;
@@ -18,7 +18,7 @@ type CategoryFooterProps = {
 
 export default function Footer({
   categories,
-  transactions = [],
+  transactions,
   onToggle,
   page,
   months,
@@ -29,19 +29,21 @@ export default function Footer({
   let totalSpent: number = 0;
   let totalBudget: number = 0;
 
-  transactions.forEach((transaction): void => {
-    if (
-      transaction.type === "expense" &&
-      currentMonth &&
-      months &&
-      currentMonth === months[Number(transaction.date.slice(5, 7)) - 1]
-    ) {
-      totalSpent += transaction.amount;
-    }
-  });
-  categories.forEach((c): void => {
-    totalBudget += c.amount;
-  });
+  if (transactions) {
+    transactions.forEach((transaction): void => {
+      if (
+        transaction.type === "expense" &&
+        currentMonth &&
+        months &&
+        currentMonth === months[Number(transaction.date.slice(5, 7)) - 1]
+      ) {
+        totalSpent += transaction.amount;
+      }
+    });
+    categories.forEach((c): void => {
+      totalBudget += c.amount;
+    });
+  }
 
   const [isOpenStatsMenu, setIsOpenStatsMenu] = useState(false);
 
