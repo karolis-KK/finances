@@ -18,7 +18,6 @@ const CATEGORIES_PER_PAGE = 12
 type CategoryCardProps = {
   categories: Category[]
   transactions: Transaction[]
-  onAddTransaction: (transaction: Transaction) => void,
   currentMonth: string,
   months: string[]
 }
@@ -26,7 +25,6 @@ type CategoryCardProps = {
 export default function CategoryCard({
   categories,
   transactions,
-  onAddTransaction,
   currentMonth,
   months
 }: CategoryCardProps) {
@@ -76,7 +74,7 @@ export default function CategoryCard({
   }
 
   const handleAddTransaction = (categoryId: string, amount: number, date: string, totalRemaining: number): void => {
-    onAddTransaction(
+    /*onAddTransaction(
       {
         id: `transaction-${crypto.randomUUID()}`,
         amount: amount <= totalRemaining ? amount : totalRemaining,
@@ -84,7 +82,7 @@ export default function CategoryCard({
         categoryId: categoryId,
         date: date
       }
-    )
+    )*/
 
     setDate(new Date().toISOString().split('T')[0]);
   }
@@ -122,6 +120,7 @@ export default function CategoryCard({
           return (
             <li
               key={category.id}
+              id={category.id}
               className="relative col-span-1 row-span-1 w-full overflow-hidden"
             >
               <InfoMenu transactions={transactions} handleOpenInfoMenu={handleOpenInfoMenu} isOpenInfoMenu={isOpenInfoMenu} category={category} used={getUsedAmount(category.id, category.amount, category.amount - category.used)} currentMonth={currentMonth} months={months} />

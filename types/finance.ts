@@ -20,7 +20,7 @@ export type Category = {
     emoji?: string;
     transactions?: Transaction[]
 }
-
+/*
 export type CategoryBudget = {
     id: string;
     categoryId: string;
@@ -30,3 +30,4 @@ export type CategoryBudget = {
 export type CategoryGoal = Omit<CategoryBudget, 'monthlyLimit'> & {
     targetAmount: number;
 }
+*/

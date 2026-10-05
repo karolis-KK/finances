@@ -7,10 +7,9 @@ import { useState, type ChangeEvent } from 'react';
 type CategoryMenuProps = {
   categoryMenu: boolean
   onToggle: () => void
-  onAddCategory: (category: Category) => void
 }
 
-export default function CategoryMenu({ categoryMenu, onToggle, onAddCategory }: CategoryMenuProps) {
+export default function CategoryMenu({ categoryMenu, onToggle }: CategoryMenuProps) {
   const [name, setName] = useState('');
   const [amount, setAmount] = useState(0);
   const [color, setColor] = useState('#eb5e28');
@@ -41,7 +40,7 @@ export default function CategoryMenu({ categoryMenu, onToggle, onAddCategory }: 
       color,
       emoji,
     }
-    onAddCategory(category);
+    /*onAddCategory(category);*/
     onToggle();
   }
   return (

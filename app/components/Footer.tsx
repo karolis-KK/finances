@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import type { Category, Transaction } from "@/types/finance"
-import { Euro, ChartNoAxesColumn, X } from "lucide-react"
+import { useState } from "react";
+import type { Category, Transaction } from "@/types/finance";
+import { Euro, ChartNoAxesColumn, X } from "lucide-react";
 
 type CategoryFooterProps = {
-  categories: Category[]
-  transactions?: Transaction[]
+  categories: Category[];
+  transactions?: Transaction[];
   onToggle?: () => void
-  onAddCategory?: (category: Category) => void
-  page: string,
-  months?: string[] | undefined,
-  currentMonth?: string,
-  handleMonth?: (e: React.ChangeEvent<HTMLSelectElement>) => void
-  handleClearMontlyAmount?: (currentMonth: string) => void
-}
+  //onAddCategory?: (category: Category) => void
+  page: string;
+  months?: string[] | undefined;
+  currentMonth?: string;
+  //handleMonth?: (e: React.ChangeEvent<HTMLSelectElement>) => void
+  //handleClearMontlyAmount?: (currentMonth: string) => void
+};
 
 export default function Footer({
   categories,
@@ -23,11 +23,11 @@ export default function Footer({
   page,
   months,
   currentMonth,
-  handleMonth,
-  handleClearMontlyAmount
+  //handleMonth,
+  // handleClearMontlyAmount
 }: CategoryFooterProps) {
-  let totalSpent: number = 0
-  let totalBudget: number = 0
+  let totalSpent: number = 0;
+  let totalBudget: number = 0;
 
   transactions.forEach((transaction): void => {
     if (
@@ -36,22 +36,22 @@ export default function Footer({
       months &&
       currentMonth === months[Number(transaction.date.slice(5, 7)) - 1]
     ) {
-      totalSpent += transaction.amount
+      totalSpent += transaction.amount;
     }
-  })
+  });
   categories.forEach((c): void => {
-    totalBudget += c.amount
-  })
+    totalBudget += c.amount;
+  });
 
-  const [isOpenStatsMenu, setIsOpenStatsMenu] = useState(false)
+  const [isOpenStatsMenu, setIsOpenStatsMenu] = useState(false);
 
   const handleStatsMenu = (): void => {
-    setIsOpenStatsMenu((isOpen) => !isOpen)
-  }
+    setIsOpenStatsMenu((isOpen) => !isOpen);
+  };
 
   return (
     <footer
-      className={`bg-[#ccc5b9] bottom-0 w-full sticky ${page === "categories" ? "lg:static" : "lg:fixed"} z-20 h-20 flex items-center justify-center p-2`}
+      className={`bg-[#ccc5b9] bottom-0 w-full shrink-0 ${page === "categories" ? "lg:static" : "lg:fixed"} z-20 h-20 flex items-center justify-center p-2`}
     >
       <div className="bg-[#eb5e28] flex items-center w-full h-full rounded-md justify-between p-2 pl-4 pr-4">
         <button onClick={handleStatsMenu} className="lg:hidden">
@@ -70,23 +70,29 @@ export default function Footer({
             Total budget [{totalBudget.toFixed(2)}
             <Euro className="2xl:size-7.5 size-5" />]
           </h1>
-          <div className={`${page === 'categories' ? 'flex' : 'hidden'} flex gap-4 items-center`}>
+          <div
+            className={`${page === "categories" ? "flex" : "hidden"} flex gap-4 items-center`}
+          >
             <div className="flex gap-2 items-center">
               <h1>Month</h1>
               <select
                 value={currentMonth}
-                onChange={handleMonth}
+                //onChange={handleMonth}
                 name="month"
                 id="month"
                 className="bg-[#fffcf2] hover:bg-[#fffcf2]/80 hover:cursor-pointer text-[#403d39] 2xl:text-2xl font-medium p-2 rounded-md pl-3 pr-3"
               >
                 {months?.map((month) => (
-                  <option value={month} key={month}>{month}</option>
+                  <option value={month} key={month}>
+                    {month}
+                  </option>
                 ))}
               </select>
             </div>
             <div>
-              <button onClick={() => handleClearMontlyAmount?.(currentMonth ?? "")} className="bg-[#fffcf2] hover:bg-[#fffcf2]/80 hover:cursor-pointer text-[#403d39] 2xl:text-2xl font-medium p-1.5 rounded-md pl-3 pr-3">
+              <button
+                /*onClick={() => handleClearMontlyAmount?.(currentMonth ?? "")}*/ className="bg-[#fffcf2] hover:bg-[#fffcf2]/80 hover:cursor-pointer text-[#403d39] 2xl:text-2xl font-medium p-1.5 rounded-md pl-3 pr-3"
+              >
                 Clear for month
               </button>
             </div>
@@ -125,5 +131,5 @@ export default function Footer({
         </button>
       </div>
     </footer>
-  )
+  );
 }
