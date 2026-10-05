@@ -8,7 +8,7 @@ type CategoryFooterProps = {
   categories: Category[];
   transactions?: Transaction[];
   onToggle?: () => void
-  //onAddCategory?: (category: Category) => void
+  onAddCategory?: (category: Category) => void
   page: string;
   months?: string[] | undefined;
   currentMonth?: string;

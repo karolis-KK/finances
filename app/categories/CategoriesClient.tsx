@@ -1,21 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import type { Category, Transaction } from "@/types/finance";
 import Navbar from "../components/NavBar";
 import Footer from "../components/Footer";
 import CategoryMenu from "../components/CategoryMenu";
 import CategoryCard from "../components/CategoryCard";
+import { useFinance } from "../context/FinanceContext";
 
-type CategoryClientProps = {
-  categories: Category[];
-  transactions: Transaction[];
-};
-
-export default function CategoriesClient({
+export default function CategoriesClient() {
+  const {
   categories,
   transactions,
-}: CategoryClientProps) {
+  setCategories,
+  setTransactions,
+} = useFinance()
   const [categoryMenu, setCategoryMenu] = useState(false);
 
   const handleCategoryMenu = () => {
@@ -58,6 +56,8 @@ export default function CategoriesClient({
         <CategoryMenu
           categoryMenu={categoryMenu}
           onToggle={handleCategoryMenu}
+          categories={categories}
+          setCategories={setCategories}
         />
         {categories.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center">
@@ -89,7 +89,7 @@ export default function CategoriesClient({
         categories={categories}
         transactions={transactions}
         onToggle={handleCategoryMenu}
-        //onAddCategory={(category) => setCategories((currentCategories) => [...currentCategories, category])}
+        onAddCategory={(category) => setCategories((currentCategories) => [category, ...currentCategories])}
         page={"categories"}
         months={months}
         currentMonth={currentMonth}
