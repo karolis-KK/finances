@@ -15,6 +15,7 @@ import type { Category, Transaction } from "@/types/finance"
 type FinanceContextValue = {
   categories: Category[]
   transactions: Transaction[]
+
   // Dispatch<SetStateAction><kazkas>> setCategories: (newCategories: Category[]) => void, it allows both setCategories(newCategories) and setCategories(previous => ...)
   setCategories: Dispatch<SetStateAction<Category[]>>
   setTransactions: Dispatch<SetStateAction<Transaction[]>>
@@ -22,15 +23,17 @@ type FinanceContextValue = {
 
 type FinanceProviderProps = {
   // everything between <FinanceProvider> and </FinanceProvider>.
-  children: ReactNode
+  children: ReactNode,
+  initialCategories: Category[],
+  initialTransactions: Transaction[]
 }
 
 // shared context. It starts as undefined until a provider supplies a value
 const FinanceContext = createContext<FinanceContextValue | undefined>(undefined)
 
-export function FinanceProvider({ children }: FinanceProviderProps) {
-  const [categories, setCategories] = useState<Category[]>([])
-  const [transactions, setTransactions] = useState<Transaction[]>([])
+export function FinanceProvider({ children, initialCategories, initialTransactions }: FinanceProviderProps) {
+  const [categories, setCategories] = useState<Category[]>(initialCategories)
+  const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions)
 
   // runs after the provider first appears in the browser
   /*useEffect(() => {

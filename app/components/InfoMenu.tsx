@@ -4,6 +4,7 @@ import type { Category, Transaction } from "@/types/finance"
 import { X, Euro } from "lucide-react"
 import { useState } from "react"
 import { useFinance } from "../context/FinanceContext"
+import { deleteCategory } from "../categories/actions"
 
 type InfoMenuProps = {
   category: Category
@@ -32,7 +33,8 @@ export default function InfoMenu({
     setTransactions
   } = useFinance()
 
-  const handleDeleteCategory = (categoryId: string): void => {
+  const handleDeleteCategory = async (categoryId: string): Promise<void> => {
+    await deleteCategory(categoryId)
     setCategories(currentCategories => currentCategories.filter((category) => category.id !== categoryId))
     setTransactions(currentTransactions => currentTransactions.filter((transaction) => transaction.categoryId !== categoryId))
   }
