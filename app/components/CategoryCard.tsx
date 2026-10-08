@@ -30,7 +30,7 @@ export default function CategoryCard({
   months,
 }: CategoryCardProps) {
   const { transactions, setTransactions } = useFinance();
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [currentPage, setCurrentPage] = useState(1);
   const [openExpenseCategoryId, setOpenExpenseCategoryId] = useState<
@@ -41,7 +41,7 @@ export default function CategoryCard({
 
   const handleIsOpenErrorCardChange = (categoryId: string) => {
     setIsOpenErrorCard(isOpenErrorCard === null ? categoryId : null);
-  }
+  };
 
   const totalPages = Math.max(
     Math.ceil(categories.length / CATEGORIES_PER_PAGE),
@@ -78,7 +78,7 @@ export default function CategoryCard({
   };
 
   const handleChangeAmount = (e: ChangeEvent<HTMLInputElement>): void => {
-    setAmount(Number(e.target.value));
+    setAmount(e.target.value);
   };
 
   const handleChangeDate = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -154,13 +154,17 @@ export default function CategoryCard({
     handleOpenExpenseMenu(category.id);
   };
 
-  const handleAddExpense = async (id: string, totalRemaining: number, transactionAmount: number) => {
-    if(transactionAmount > totalRemaining) {
+  const handleAddExpense = async (
+    id: string,
+    totalRemaining: number,
+    transactionAmount: number,
+  ) => {
+    if (transactionAmount > totalRemaining) {
       handleIsOpenErrorCardChange(id);
-    }
-    else {
-      await handleAddTransaction(id, amount, date, totalRemaining);
+    } else {
+      await handleAddTransaction(id, Number(amount), date, totalRemaining);
       setOpenExpenseCategoryId(null);
+      setAmount("");
     }
   };
   return (
@@ -196,7 +200,7 @@ export default function CategoryCard({
               {isOpenErrorCard === category.id && (
                 <CategoryErrorCard
                   category={category}
-                  transactionAmount={amount}
+                  transactionAmount={Number(amount)}
                   totalRemaining={remaining}
                   handleIsOpenErrorCardChange={handleIsOpenErrorCardChange}
                 />
@@ -272,6 +276,7 @@ export default function CategoryCard({
                   />
                   <input
                     onChange={handleChangeAmount}
+                    value={amount}
                     type="number"
                     id="amount"
                     className="border border-[#fffcf2]/20 mt-1 w-full pl-10 pt-2 pb-2 pr-2 rounded-md focus:outline-none focus:ring-0"
@@ -292,7 +297,9 @@ export default function CategoryCard({
                   />
                 </div>
                 <button
-                  onClick={() => handleAddExpense(category.id, remaining, amount)}
+                  onClick={() =>
+                    handleAddExpense(category.id, remaining, Number(amount))
+                  }
                   className="bg-[#fffcf2] text-[#403d39] p-2 mt-8 rounded-md hover:cursor-pointer hover:bg-[#fffcf2]/70"
                 >
                   Add expense
