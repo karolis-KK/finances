@@ -38,6 +38,7 @@ export default function CategoryCard({
   >(null); // arba string (category.id) arba null (nei vienas), pradinis value - null
   const [isOpenInfoMenu, setIsOpenInfoMenu] = useState<string | null>(null);
   const [isOpenErrorCard, setIsOpenErrorCard] = useState<string | null>(null);
+  const [status, setStatus] = useState("");
 
   const handleIsOpenErrorCardChange = (categoryId: string) => {
     setIsOpenErrorCard(isOpenErrorCard === null ? categoryId : null);
@@ -161,6 +162,10 @@ export default function CategoryCard({
   ) => {
     if (transactionAmount > totalRemaining) {
       handleIsOpenErrorCardChange(id);
+      setStatus("over");
+    } else if (transactionAmount <= 0) {
+      handleIsOpenErrorCardChange(id);
+      setStatus("zero");
     } else {
       await handleAddTransaction(id, Number(amount), date, totalRemaining);
       setOpenExpenseCategoryId(null);
@@ -203,6 +208,7 @@ export default function CategoryCard({
                   transactionAmount={Number(amount)}
                   totalRemaining={remaining}
                   handleIsOpenErrorCardChange={handleIsOpenErrorCardChange}
+                  status={status}
                 />
               )}
               <div className="bg-[#ccc5b9] pt-2 pb-4 pr-3 pl-3 rounded-md">
