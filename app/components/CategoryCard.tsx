@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { addTransaction } from "../categories/actions";
 import { useFinance } from "../context/FinanceContext";
+import CategoryErrorCard from "./CategoryErrorCard";
 
 const CATEGORIES_PER_PAGE = 12;
 
@@ -29,13 +30,19 @@ export default function CategoryCard({
   months,
 }: CategoryCardProps) {
   const { transactions, setTransactions } = useFinance();
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [currentPage, setCurrentPage] = useState(1);
   const [openExpenseCategoryId, setOpenExpenseCategoryId] = useState<
     string | null
   >(null); // arba string (category.id) arba null (nei vienas), pradinis value - null
   const [isOpenInfoMenu, setIsOpenInfoMenu] = useState<string | null>(null);
+  const [isOpenErrorCard, setIsOpenErrorCard] = useState<string | null>(null);
+  const [status, setStatus] = useState("");
+
+  const handleIsOpenErrorCardChange = (categoryId: string) => {
+    setIsOpenErrorCard(isOpenErrorCard === null ? categoryId : null);
+  };
 
   const totalPages = Math.max(
     Math.ceil(categories.length / CATEGORIES_PER_PAGE),
@@ -72,7 +79,7 @@ export default function CategoryCard({
   };
 
   const handleChangeAmount = (e: ChangeEvent<HTMLInputElement>): void => {
-    setAmount(Number(e.target.value));
+    setAmount(e.target.value);
   };
 
   const handleChangeDate = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -148,9 +155,22 @@ export default function CategoryCard({
     handleOpenExpenseMenu(category.id);
   };
 
-  const handleAddExpense = async (id: string, totalRemaining: number) => {
-    await handleAddTransaction(id, amount, date, totalRemaining);
-    setOpenExpenseCategoryId(null);
+  const handleAddExpense = async (
+    id: string,
+    totalRemaining: number,
+    transactionAmount: number,
+  ) => {
+    if (transactionAmount > totalRemaining) {
+      handleIsOpenErrorCardChange(id);
+      setStatus("over");
+    } else if (transactionAmount <= 0) {
+      handleIsOpenErrorCardChange(id);
+      setStatus("zero");
+    } else {
+      await handleAddTransaction(id, Number(amount), date, totalRemaining);
+      setOpenExpenseCategoryId(null);
+      setAmount("");
+    }
   };
   return (
     <div className="flex flex-col items-center lg:gap-6 pt-4 pb-8">
@@ -182,6 +202,15 @@ export default function CategoryCard({
                 currentMonth={currentMonth}
                 months={months}
               />
+              {isOpenErrorCard === category.id && (
+                <CategoryErrorCard
+                  category={category}
+                  transactionAmount={Number(amount)}
+                  totalRemaining={remaining}
+                  handleIsOpenErrorCardChange={handleIsOpenErrorCardChange}
+                  status={status}
+                />
+              )}
               <div className="bg-[#ccc5b9] pt-2 pb-4 pr-3 pl-3 rounded-md">
                 <div className="flex items-center justify-center">
                   <h1 className="text-[#403d39] text-3xl">{category.name}</h1>
@@ -253,6 +282,7 @@ export default function CategoryCard({
                   />
                   <input
                     onChange={handleChangeAmount}
+                    value={amount}
                     type="number"
                     id="amount"
                     className="border border-[#fffcf2]/20 mt-1 w-full pl-10 pt-2 pb-2 pr-2 rounded-md focus:outline-none focus:ring-0"
@@ -273,7 +303,9 @@ export default function CategoryCard({
                   />
                 </div>
                 <button
-                  onClick={() => handleAddExpense(category.id, remaining)}
+                  onClick={() =>
+                    handleAddExpense(category.id, remaining, Number(amount))
+                  }
                   className="bg-[#fffcf2] text-[#403d39] p-2 mt-8 rounded-md hover:cursor-pointer hover:bg-[#fffcf2]/70"
                 >
                   Add expense

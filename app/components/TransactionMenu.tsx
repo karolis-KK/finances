@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Category, Transaction } from "@/types/finance"
 import { X, EuroIcon } from "lucide-react"
+import TransactionErrorCard from "./TransactionErrorCard"
 
 type TransactionMenuProps = {
   category: Category | null
@@ -14,7 +15,8 @@ type TransactionMenuProps = {
     transaction: Transaction,
     newAmount: number,
     newDate: string,
-  ) => void
+  ) => void,
+  transactions: Transaction[]
 }
 
 export default function TransactionMenu({
@@ -24,12 +26,14 @@ export default function TransactionMenu({
   handleOpen,
   handleDeleteTransaction,
   handleEditTransaction,
+  transactions
 }: TransactionMenuProps) {
   const [newAmount, setNewAmount] = useState<number>(transaction.amount)
   const [newDate, setNewDate] = useState<string>(
     transaction.date
   )
   const [openTransactionEditMenu, setOpenTransactionEditMenu] = useState<string | null>(null)
+  const [isOpenTransactionErrorCard, setIsOpenTransactionErrorCard] = useState<string |null>(null);
 
   const handleOpenEditTransactionMenu = (transactionId: string): void => {
     if (transactionId === transaction.id) {
@@ -39,13 +43,27 @@ export default function TransactionMenu({
     setOpenTransactionEditMenu((id) => transactionId === id ? null : transactionId)
   }
 
-  const handleEditTransactionSave = (transaction: Transaction): void => {
-    handleEditTransaction(transaction,  newAmount, newDate)
-    setOpenTransactionEditMenu((id) => transaction.id === id ? null : transaction.id)
+  const getUsedForCategory = (categoryId: string, transactions: Transaction[]): number => {
+    return transactions.filter((transaction) => (transaction.categoryId === categoryId)).reduce((total, transaction) => total + transaction.amount, 0);
+  }
+
+  const handleIsOpenTransactionErrorCard = (transactionId: string): void => {
+    setIsOpenTransactionErrorCard(isOpenTransactionErrorCard === null ? transactionId : null)
+  }
+  
+  const handleEditTransactionSave = (transaction: Transaction, categoryId: string | undefined, transactions: Transaction[], categoryBudget: number | undefined): void => {
+    if (categoryId !== undefined && categoryBudget !== undefined && getUsedForCategory(categoryId, transactions) - transaction.amount + newAmount > categoryBudget) {
+      handleIsOpenTransactionErrorCard(transaction.id)
+    }
+    else {
+      handleEditTransaction(transaction,  newAmount, newDate)
+      setOpenTransactionEditMenu((id) => transaction.id === id ? null : transaction.id)
+    }
   }
 
   return (
     <>
+      {isOpenTransactionErrorCard === transaction.id && <TransactionErrorCard transaction={transaction} handleIsOpenTransactionErrorCard={handleIsOpenTransactionErrorCard} />}
         <div className={`fixed flex items-center justify-center text-white inset-0 z-50 h-screen w-screen bg-[#252422]/40 ${transaction.id === openTransactionEditMenu ? 'translate-x-0' : 'translate-x-full'}`}>
             <div className="bg-[#252422] p-6 rounded-md">
                 <button className="hover:cursor-pointer" onClick={() => setOpenTransactionEditMenu((id) => transaction.id === id ? null : transaction.id)}><X size={20} /></button>
@@ -80,7 +98,7 @@ export default function TransactionMenu({
                         />
                     </div>
                 </div>
-                <button onClick={() => handleEditTransactionSave(transaction)} className="hover:cursor-pointer bg-[#fffcf2] pt-1.5 pb-1.5 pl-4 pr-4 rounded-md hover:bg-[#fffcf2]/70 text-[#252422] mt-4 w-full">Save</button>
+                <button onClick={() => handleEditTransactionSave(transaction, category?.id, transactions, category?.amount)} className="hover:cursor-pointer bg-[#fffcf2] pt-1.5 pb-1.5 pl-4 pr-4 rounded-md hover:bg-[#fffcf2]/70 text-[#252422] mt-4 w-full">Save</button>
             </div>
         </div>
         <aside
