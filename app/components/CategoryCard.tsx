@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { addTransaction } from "../categories/actions";
 import { useFinance } from "../context/FinanceContext";
+import CategoryErrorCard from "./CategoryErrorCard";
 
 const CATEGORIES_PER_PAGE = 12;
 
@@ -36,6 +37,11 @@ export default function CategoryCard({
     string | null
   >(null); // arba string (category.id) arba null (nei vienas), pradinis value - null
   const [isOpenInfoMenu, setIsOpenInfoMenu] = useState<string | null>(null);
+  const [isOpenErrorCard, setIsOpenErrorCard] = useState<string | null>(null);
+
+  const handleIsOpenErrorCardChange = (categoryId: string) => {
+    setIsOpenErrorCard(isOpenErrorCard === null ? categoryId : null);
+  }
 
   const totalPages = Math.max(
     Math.ceil(categories.length / CATEGORIES_PER_PAGE),
@@ -148,9 +154,14 @@ export default function CategoryCard({
     handleOpenExpenseMenu(category.id);
   };
 
-  const handleAddExpense = async (id: string, totalRemaining: number) => {
-    await handleAddTransaction(id, amount, date, totalRemaining);
-    setOpenExpenseCategoryId(null);
+  const handleAddExpense = async (id: string, totalRemaining: number, transactionAmount: number) => {
+    if(transactionAmount > totalRemaining) {
+      handleIsOpenErrorCardChange(id);
+    }
+    else {
+      await handleAddTransaction(id, amount, date, totalRemaining);
+      setOpenExpenseCategoryId(null);
+    }
   };
   return (
     <div className="flex flex-col items-center lg:gap-6 pt-4 pb-8">
@@ -182,6 +193,14 @@ export default function CategoryCard({
                 currentMonth={currentMonth}
                 months={months}
               />
+              {isOpenErrorCard === category.id && (
+                <CategoryErrorCard
+                  category={category}
+                  transactionAmount={amount}
+                  totalRemaining={remaining}
+                  handleIsOpenErrorCardChange={handleIsOpenErrorCardChange}
+                />
+              )}
               <div className="bg-[#ccc5b9] pt-2 pb-4 pr-3 pl-3 rounded-md">
                 <div className="flex items-center justify-center">
                   <h1 className="text-[#403d39] text-3xl">{category.name}</h1>
@@ -273,7 +292,7 @@ export default function CategoryCard({
                   />
                 </div>
                 <button
-                  onClick={() => handleAddExpense(category.id, remaining)}
+                  onClick={() => handleAddExpense(category.id, remaining, amount)}
                   className="bg-[#fffcf2] text-[#403d39] p-2 mt-8 rounded-md hover:cursor-pointer hover:bg-[#fffcf2]/70"
                 >
                   Add expense
